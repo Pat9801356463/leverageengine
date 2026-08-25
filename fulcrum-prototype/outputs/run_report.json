@@ -1,0 +1,484 @@
+{
+  "freshness": [
+    {
+      "source": "warehouse",
+      "native_grain": "daily",
+      "latest_period": "2026-08-09",
+      "age_hours": 24.0,
+      "tolerance_hours": 36.0,
+      "status": "fresh"
+    },
+    {
+      "source": "order_system",
+      "native_grain": "transaction",
+      "latest_period": "2026-08-09",
+      "age_hours": 0.1,
+      "tolerance_hours": 2.0,
+      "status": "fresh"
+    },
+    {
+      "source": "logistics_api",
+      "native_grain": "hourly",
+      "latest_period": "2026-08-09",
+      "age_hours": 1.0,
+      "tolerance_hours": 6.0,
+      "status": "fresh"
+    },
+    {
+      "source": "support_tickets",
+      "native_grain": "daily",
+      "latest_period": "2026-08-09",
+      "age_hours": 24.0,
+      "tolerance_hours": 36.0,
+      "status": "fresh"
+    },
+    {
+      "source": "nps_survey",
+      "native_grain": "monthly",
+      "latest_period": "2026-07-01",
+      "age_hours": 720.0,
+      "tolerance_hours": 1080.0,
+      "status": "fresh"
+    }
+  ],
+  "detection": {
+    "n_tests": 2016,
+    "n_naive_significant": 338,
+    "n_survives_fdr": 272,
+    "n_material": 115,
+    "false_alarms_avoided": 66,
+    "empirical_coverage": 0.8976,
+    "target_coverage": 0.9,
+    "coverage_n": 52080
+  },
+  "attribution": {
+    "total_gap": -6773057.995456282,
+    "shapley": {
+      "region": 35.59,
+      "product_line": 26.45,
+      "channel": 28.02,
+      "segment": 9.93
+    },
+    "concentration": {
+      "n_negative_leaves": 130,
+      "n_leaves_for_80pct_of_shortfall": 29,
+      "best_slice_rule": {
+        "region": "North",
+        "product_line": "LargeAppliances",
+        "channel": "Marketplace",
+        "segment": "Consumer"
+      },
+      "best_slice_share_of_gap_pct": 72.9
+    },
+    "pvm": {
+      "available": true,
+      "baseline_revenue": 36871020.555724375,
+      "current_revenue": 30484494.812831607,
+      "total_change": -6386525.742892768,
+      "volume_effect": -7697236.353518106,
+      "price_effect": 1310710.6106253355,
+      "mix_effect": 0.0,
+      "residual": 1.862645149230957e-09,
+      "dominant_term": "volume",
+      "units_change_pct": -20.876114188065454,
+      "asp_change_pct": 4.492768581342332
+    },
+    "funnel": {
+      "available": true,
+      "gross_orders_baseline": 965.7023991783407,
+      "gross_orders_current": 886.8666106470248,
+      "gross_orders_change_pct": -8.163569708265461,
+      "cancellation_rate_baseline": 0.0881742474748074,
+      "cancellation_rate_current": 0.21439458726785865,
+      "cancellation_rate_change_pp": 12.622033979305126,
+      "net_units_change": -183.82510715046328,
+      "orders_effect": -71.88450220348405,
+      "cancellation_effect": -121.89128496325498,
+      "interaction": 9.95068001627574,
+      "dominant_term": "cancellation"
+    }
+  },
+  "hypotheses": [
+    {
+      "hid": "E1",
+      "label": "Logistics vendor switched (3PL contract change)",
+      "source": "event_log",
+      "cause_node": "logistics_vendor",
+      "start": "2026-07-27",
+      "verdict": "accepted",
+      "reason": ""
+    },
+    {
+      "hid": "E2",
+      "label": "List price increase +3%",
+      "source": "event_log",
+      "cause_node": "list_price",
+      "start": "2026-08-03",
+      "verdict": "rejected",
+      "reason": "temporal precedence violated: the effect began 2026-08-02 but the cause began 2026-08-03 ("
+    },
+    {
+      "hid": "E3",
+      "label": "Competitor promotional sale",
+      "source": "event_log",
+      "cause_node": "competitor_promo",
+      "start": "2026-07-20",
+      "verdict": "rejected",
+      "reason": "dose-response inverted: exposure is highest in West (intensity 1.00) but the effect is con"
+    }
+  ],
+  "confidence": {
+    "mode": "confident",
+    "confidence": 0.629411901362018,
+    "explained_fraction": 0.629411901362018,
+    "unexplained_inr": 2510014.6845009252,
+    "triggers": [
+      {
+        "code": "UNEXPLAINED_RESIDUAL",
+        "fired": false,
+        "detail": "37.1% of the movement (Rs 25.1L/week) is not attributed to any hypothesis that survived causal testing",
+        "discriminating_test": "Pull marketplace search-ranking and impression logs for the affected weeks. A ranking demotion would produce a demand-side shortfall with no event-log entry and no support-ticket signature, which is exactly the pattern in the residual."
+      },
+      {
+        "code": "COMPETING_EXPLANATIONS",
+        "fired": false,
+        "detail": "no two accepted hypotheses have indistinguishable effects",
+        "discriminating_test": ""
+      },
+      {
+        "code": "STALE_SOURCE",
+        "fired": false,
+        "detail": "all contributing sources within tolerance",
+        "discriminating_test": ""
+      },
+      {
+        "code": "SOURCE_CONFLICT",
+        "fired": false,
+        "detail": "cross-source reconciliation checks passed",
+        "discriminating_test": ""
+      },
+      {
+        "code": "SPARSE_HISTORY",
+        "fired": false,
+        "detail": "156 weeks of history available",
+        "discriminating_test": ""
+      },
+      {
+        "code": "GRAIN_POLICY",
+        "fired": true,
+        "detail": "KPIs excluded from weekly attribution by contract: ['nps']",
+        "discriminating_test": "These metrics cannot support a weekly claim at their native grain; interpolating them would present interpolation as evidence."
+      },
+      {
+        "code": "CALIBRATION_INTEGRITY",
+        "fired": false,
+        "detail": "intervals calibrated on out-of-sample residuals",
+        "discriminating_test": ""
+      }
+    ],
+    "accepted_hypotheses": [
+      "E1"
+    ],
+    "competing_hypotheses": [],
+    "rationale": "One explanation survived all falsification tests and accounts for 63% of the movement."
+  },
+  "decision": {
+    "budget": 7000000.0,
+    "solvers_agree": true,
+    "chosen": {
+      "levers": [
+        "L4",
+        "L5"
+      ],
+      "cost": 6700000.0,
+      "value_per_week": 3550000.0,
+      "realised": [
+        "C1_delivery_capacity",
+        "C2_listing_accuracy",
+        "C3_customer_retention",
+        "C4_price_position"
+      ]
+    },
+    "naive_repair_cost": 9500000.0,
+    "budget_sweep": [
+      {
+        "budget_inr": 500000.0,
+        "chosen_levers": [],
+        "chosen_labels": [],
+        "family": "none",
+        "cost_inr": 0,
+        "value_per_week_inr": 0,
+        "constraints_realised": [],
+        "payback_weeks": Infinity
+      },
+      {
+        "budget_inr": 1500000.0,
+        "chosen_levers": [
+          "L4"
+        ],
+        "chosen_labels": [
+          "Targeted price rollback on Large Appliances"
+        ],
+        "family": "repair",
+        "cost_inr": 1200000.0,
+        "value_per_week_inr": 250000.0,
+        "constraints_realised": [
+          "C4_price_position"
+        ],
+        "payback_weeks": 4.8
+      },
+      {
+        "budget_inr": 4500000.0,
+        "chosen_levers": [
+          "L1",
+          "L7"
+        ],
+        "chosen_labels": [
+          "Renegotiate 3PL SLA / revert to previous logistics v",
+          "Suppress Large Appliance listings in affected North "
+        ],
+        "family": "goal_modifying+repair",
+        "cost_inr": 4400000.0,
+        "value_per_week_inr": 2500000.0,
+        "constraints_realised": [
+          "C1_delivery_capacity",
+          "C2_listing_accuracy"
+        ],
+        "payback_weeks": 1.8
+      },
+      {
+        "budget_inr": 5600000.0,
+        "chosen_levers": [
+          "L5"
+        ],
+        "chosen_labels": [
+          "Exit marketplace for Large Appliances in North; rout"
+        ],
+        "family": "structural",
+        "cost_inr": 5500000.0,
+        "value_per_week_inr": 3300000.0,
+        "constraints_realised": [
+          "C1_delivery_capacity",
+          "C2_listing_accuracy",
+          "C3_customer_retention"
+        ],
+        "payback_weeks": 1.7
+      },
+      {
+        "budget_inr": 7000000.0,
+        "chosen_levers": [
+          "L4",
+          "L5"
+        ],
+        "chosen_labels": [
+          "Targeted price rollback on Large Appliances",
+          "Exit marketplace for Large Appliances in North; rout"
+        ],
+        "family": "repair+structural",
+        "cost_inr": 6700000.0,
+        "value_per_week_inr": 3550000.0,
+        "constraints_realised": [
+          "C1_delivery_capacity",
+          "C2_listing_accuracy",
+          "C3_customer_retention",
+          "C4_price_position"
+        ],
+        "payback_weeks": 1.9
+      },
+      {
+        "budget_inr": 10000000.0,
+        "chosen_levers": [
+          "L4",
+          "L5"
+        ],
+        "chosen_labels": [
+          "Targeted price rollback on Large Appliances",
+          "Exit marketplace for Large Appliances in North; rout"
+        ],
+        "family": "repair+structural",
+        "cost_inr": 6700000.0,
+        "value_per_week_inr": 3550000.0,
+        "constraints_realised": [
+          "C1_delivery_capacity",
+          "C2_listing_accuracy",
+          "C3_customer_retention",
+          "C4_price_position"
+        ],
+        "payback_weeks": 1.9
+      }
+    ]
+  },
+  "narratives": [
+    {
+      "persona": "ops_manager_north",
+      "validation": {
+        "numbers_in_text": 13,
+        "ungrounded": [],
+        "passed": true
+      },
+      "text": "North / LargeAppliances / Marketplace / Consumer - week ending 2026-08-09.\n\nrevenue came in -1.8% below forecast (week-on-week move was 1.0%, so most of the headline drop was expected seasonality).\nOrders held roughly steady (-8.2%); cancellations rose from 8.8% to 21.4%. This is a fulfilment problem, not a demand problem.\n\nLikely cause: Logistics vendor switched (3PL contract change) (from 2026-07-27).\n\n2 further action(s) require authority above your level and have been routed to their owners."
+    },
+    {
+      "persona": "category_head_appliances",
+      "validation": {
+        "numbers_in_text": 33,
+        "ungrounded": [],
+        "passed": true
+      },
+      "text": "revenue - North / LargeAppliances / Marketplace / Consumer, week ending 2026-08-09.\n\nMovement: 1.0% week-on-week, but -1.8% against forecast - the difference is seasonality that was already expected.\nLocalisation: 72.9% of the shortfall sits in a single slice.\nDecomposition: volume effect dominates (units -20.9%, ASP 4.5%) - not a pricing problem.\n\nCause accepted: Logistics vendor switched (3PL contract change), effective 2026-07-27.\n  Effect: +10.07pp on cancellation_rate, worth Rs 42.6L per week.\n  Survived 6 falsification tests.\n\nRejected, with reasons:\n  - List price increase +3%: temporal precedence violated: the effect began 2026-08-02 but the cause began 2026-08-03 (0 weeks later). A cause cannot post-date its effect.\n  - Competitor promotional sale: dose-response inverted: exposure is highest in West (intensity 1.00) but the effect is concentrated in North (intensity 0.60); correlation between exp\n\nRecommended bundle: Targeted price rollback on Large Appliances, Exit marketplace for Large Appliances in North; route to own-site fulfilment with company-controlled deli\n  Cost Rs 67.0L against an envelope of Rs 70.0L; expected recovery Rs 35.5L per week.\n  Runner-up: Exit marketplace for Large Appliances in North; route to own-site fulfilment with company-controlled delivery at Rs 55.0L recovering Rs 33.0L per week - rejected on value per rupee.\n\nConfidence: 0.63 (confident). One explanation survived all falsification tests and accounts for 63% of the movement.\nUnexplained: Rs 25.1L per week remains unattributed and is NOT covered by the accepted cause.\n  Next test: These metrics cannot support a weekly claim at their native grain; interpolating them would present interpolation as evidence."
+    }
+  ],
+  "entitlement_check": {
+    "leaked_regions": [],
+    "passed": true
+  },
+  "validator_negative_test": {
+    "numbers_in_text": 2,
+    "ungrounded": [
+      "47.3",
+      "91.4"
+    ],
+    "passed": false
+  },
+  "sparse_history": {
+    "n_sparse_slices": 336,
+    "n_invalid_intervals": 80,
+    "example": "ALL / SmartHome / ALL / ALL",
+    "weeks": 14
+  },
+  "method_split": {
+    "total_pipeline_steps": 27,
+    "llm_steps": 1,
+    "non_llm_steps": 26,
+    "llm_share_pct": 3.7,
+    "by_category": {
+      "business_rules": 7,
+      "deterministic": 6,
+      "statistics": 6,
+      "causal_inference": 5,
+      "traditional_ml": 1,
+      "optimisation": 1,
+      "llm": 1
+    },
+    "llm_scope": "Prose rendering only. The LLM performs no arithmetic, has no database access, and every numeral it emits is validated against a pre-computed evidence object before the artefact is released.",
+    "prototype_substitutions": 10
+  },
+  "telemetry": {
+    "total_latency_ms": 38260.69,
+    "latency_by_kind_ms": {
+      "deterministic": 603.68,
+      "statistical": 36269.79,
+      "ml": 317.66,
+      "causal": 1050.33,
+      "optimisation": 16.7,
+      "llm": 2.53
+    },
+    "model_calls": 2,
+    "tokens": {
+      "input": 0,
+      "output": 0
+    },
+    "estimated_cost": {
+      "usd": 0.0,
+      "inr": 0.0
+    },
+    "llm_vs_non_llm": {
+      "llm_latency_pct": 0.01,
+      "non_llm_latency_pct": 99.99,
+      "llm_stage_count": 2,
+      "non_llm_stage_count": 8
+    },
+    "stages": [
+      {
+        "name": "S1 load sources",
+        "latency_ms": 227.92,
+        "kind": "deterministic",
+        "notes": "",
+        "rows_processed": 107451
+      },
+      {
+        "name": "S2 align sources",
+        "latency_ms": 374.95,
+        "kind": "deterministic",
+        "notes": "",
+        "rows_processed": 22968
+      },
+      {
+        "name": "S3 detect",
+        "latency_ms": 36156.88,
+        "kind": "statistical",
+        "notes": "",
+        "rows_processed": 2016
+      },
+      {
+        "name": "S4a attribute",
+        "latency_ms": 112.91,
+        "kind": "statistical",
+        "notes": "",
+        "rows_processed": null
+      },
+      {
+        "name": "S4b generate hypotheses",
+        "latency_ms": 317.66,
+        "kind": "ml",
+        "notes": "",
+        "rows_processed": null
+      },
+      {
+        "name": "S4b prosecute",
+        "latency_ms": 1050.33,
+        "kind": "causal",
+        "notes": "",
+        "rows_processed": null
+      },
+      {
+        "name": "S5 abstention policy",
+        "latency_ms": 0.81,
+        "kind": "deterministic",
+        "notes": "",
+        "rows_processed": null
+      },
+      {
+        "name": "S6 portfolio optimisation",
+        "latency_ms": 16.7,
+        "kind": "optimisation",
+        "notes": "",
+        "rows_processed": null
+      },
+      {
+        "name": "S7 render [ops_manager_north]",
+        "latency_ms": 1.27,
+        "kind": "llm",
+        "notes": "",
+        "rows_processed": null
+      },
+      {
+        "name": "S7 render [category_head_appliances]",
+        "latency_ms": 1.26,
+        "kind": "llm",
+        "notes": "",
+        "rows_processed": null
+      }
+    ],
+    "calls": [
+      {
+        "stage": "S7 render [ops_manager_north]",
+        "model": "deterministic",
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "latency_ms": 0.225034999999707,
+        "cached": false,
+        "cost_usd": 0.0
+      },
+      {
+        "stage": "S7 render [category_head_appliances]",
+        "model": "deterministic",
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "latency_ms": 0.026299000012386387,
+        "cached": false,
+        "cost_usd": 0.0
+      }
+    ]
+  }
+}

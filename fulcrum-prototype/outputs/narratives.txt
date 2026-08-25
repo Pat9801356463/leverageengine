@@ -1,0 +1,33 @@
+=== ops_manager_north (slack) ===
+North / LargeAppliances / Marketplace / Consumer - week ending 2026-08-09.
+
+revenue came in -1.8% below forecast (week-on-week move was 1.0%, so most of the headline drop was expected seasonality).
+Orders held roughly steady (-8.2%); cancellations rose from 8.8% to 21.4%. This is a fulfilment problem, not a demand problem.
+
+Likely cause: Logistics vendor switched (3PL contract change) (from 2026-07-27).
+
+2 further action(s) require authority above your level and have been routed to their owners.
+
+=== category_head_appliances (email) ===
+revenue - North / LargeAppliances / Marketplace / Consumer, week ending 2026-08-09.
+
+Movement: 1.0% week-on-week, but -1.8% against forecast - the difference is seasonality that was already expected.
+Localisation: 72.9% of the shortfall sits in a single slice.
+Decomposition: volume effect dominates (units -20.9%, ASP 4.5%) - not a pricing problem.
+
+Cause accepted: Logistics vendor switched (3PL contract change), effective 2026-07-27.
+  Effect: +10.07pp on cancellation_rate, worth Rs 42.6L per week.
+  Survived 6 falsification tests.
+
+Rejected, with reasons:
+  - List price increase +3%: temporal precedence violated: the effect began 2026-08-02 but the cause began 2026-08-03 (0 weeks later). A cause cannot post-date its effect.
+  - Competitor promotional sale: dose-response inverted: exposure is highest in West (intensity 1.00) but the effect is concentrated in North (intensity 0.60); correlation between exp
+
+Recommended bundle: Targeted price rollback on Large Appliances, Exit marketplace for Large Appliances in North; route to own-site fulfilment with company-controlled deli
+  Cost Rs 67.0L against an envelope of Rs 70.0L; expected recovery Rs 35.5L per week.
+  Runner-up: Exit marketplace for Large Appliances in North; route to own-site fulfilment with company-controlled delivery at Rs 55.0L recovering Rs 33.0L per week - rejected on value per rupee.
+
+Confidence: 0.63 (confident). One explanation survived all falsification tests and accounts for 63% of the movement.
+Unexplained: Rs 25.1L per week remains unattributed and is NOT covered by the accepted cause.
+  Next test: These metrics cannot support a weekly claim at their native grain; interpolating them would present interpolation as evidence.
+

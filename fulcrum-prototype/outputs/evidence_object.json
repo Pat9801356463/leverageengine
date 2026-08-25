@@ -1,0 +1,213 @@
+{
+  "finding_id": "F-2026W32-001",
+  "analysis_week": "2026-08-09",
+  "kpi": "revenue",
+  "slice_label": "North / LargeAppliances / Marketplace / Consumer",
+  "slice_spec": {
+    "region": "North",
+    "product_line": "LargeAppliances",
+    "channel": "Marketplace",
+    "segment": "Consumer"
+  },
+  "observed_change_pct": 0.9773414747220155,
+  "change_vs_forecast_pct": -1.7981868936425915,
+  "forecast": 636807015.4781904,
+  "actual": 625356035.188065,
+  "interval": [
+    598329311.2973915,
+    675284719.6589893
+  ],
+  "localisation": {
+    "n_negative_leaves": 130,
+    "n_leaves_for_80pct_of_shortfall": 29,
+    "best_slice_rule": {
+      "region": "North",
+      "product_line": "LargeAppliances",
+      "channel": "Marketplace",
+      "segment": "Consumer"
+    },
+    "best_slice_share_of_gap_pct": 72.9
+  },
+  "pvm": {
+    "available": true,
+    "baseline_revenue": 36871020.555724375,
+    "current_revenue": 30484494.812831607,
+    "total_change": -6386525.742892768,
+    "volume_effect": -7697236.353518106,
+    "price_effect": 1310710.6106253355,
+    "mix_effect": 0.0,
+    "residual": 1.862645149230957e-09,
+    "dominant_term": "volume",
+    "units_change_pct": -20.876114188065454,
+    "asp_change_pct": 4.492768581342332
+  },
+  "funnel": {
+    "available": true,
+    "gross_orders_baseline": 965.7023991783407,
+    "gross_orders_current": 886.8666106470248,
+    "gross_orders_change_pct": -8.163569708265461,
+    "cancellation_rate_baseline": 0.0881742474748074,
+    "cancellation_rate_current": 0.21439458726785865,
+    "cancellation_rate_change_pp": 12.622033979305126,
+    "net_units_change": -183.82510715046328,
+    "orders_effect": -71.88450220348405,
+    "cancellation_effect": -121.89128496325498,
+    "interaction": 9.95068001627574,
+    "dominant_term": "cancellation"
+  },
+  "accepted_causes": [
+    {
+      "hid": "E1",
+      "label": "Logistics vendor switched (3PL contract change)",
+      "start": "2026-07-27",
+      "mechanism_kpi": "cancellation_rate",
+      "mechanism_effect_pp": 10.07,
+      "revenue_impact_per_week": -4263043.310955357,
+      "tests_passed": 6
+    }
+  ],
+  "rejected_causes": [
+    {
+      "hid": "E2",
+      "label": "List price increase +3%",
+      "reason": "temporal precedence violated: the effect began 2026-08-02 but the cause began 2026-08-03 (0 weeks later). A cause cannot post-date its effect."
+    },
+    {
+      "hid": "E3",
+      "label": "Competitor promotional sale",
+      "reason": "dose-response inverted: exposure is highest in West (intensity 1.00) but the effect is concentrated in North (intensity 0.60); correlation between exp"
+    }
+  ],
+  "confidence": {
+    "mode": "confident",
+    "confidence": 0.629411901362018,
+    "explained_fraction": 0.629411901362018,
+    "unexplained_inr": 2510014.6845009252,
+    "triggers": [
+      {
+        "code": "UNEXPLAINED_RESIDUAL",
+        "fired": false,
+        "detail": "37.1% of the movement (Rs 25.1L/week) is not attributed to any hypothesis that survived causal testing",
+        "discriminating_test": "Pull marketplace search-ranking and impression logs for the affected weeks. A ranking demotion would produce a demand-side shortfall with no event-log entry and no support-ticket signature, which is exactly the pattern in the residual."
+      },
+      {
+        "code": "COMPETING_EXPLANATIONS",
+        "fired": false,
+        "detail": "no two accepted hypotheses have indistinguishable effects",
+        "discriminating_test": ""
+      },
+      {
+        "code": "STALE_SOURCE",
+        "fired": false,
+        "detail": "all contributing sources within tolerance",
+        "discriminating_test": ""
+      },
+      {
+        "code": "SOURCE_CONFLICT",
+        "fired": false,
+        "detail": "cross-source reconciliation checks passed",
+        "discriminating_test": ""
+      },
+      {
+        "code": "SPARSE_HISTORY",
+        "fired": false,
+        "detail": "156 weeks of history available",
+        "discriminating_test": ""
+      },
+      {
+        "code": "GRAIN_POLICY",
+        "fired": true,
+        "detail": "KPIs excluded from weekly attribution by contract: ['nps']",
+        "discriminating_test": "These metrics cannot support a weekly claim at their native grain; interpolating them would present interpolation as evidence."
+      },
+      {
+        "code": "CALIBRATION_INTEGRITY",
+        "fired": false,
+        "detail": "intervals calibrated on out-of-sample residuals",
+        "discriminating_test": ""
+      }
+    ],
+    "accepted_hypotheses": [
+      "E1"
+    ],
+    "competing_hypotheses": [],
+    "rationale": "One explanation survived all falsification tests and accounts for 63% of the movement.",
+    "fired_triggers": [
+      {
+        "code": "GRAIN_POLICY",
+        "fired": true,
+        "detail": "KPIs excluded from weekly attribution by contract: ['nps']",
+        "discriminating_test": "These metrics cannot support a weekly claim at their native grain; interpolating them would present interpolation as evidence."
+      }
+    ]
+  },
+  "recommendation": {
+    "budget": 7000000.0,
+    "chosen": {
+      "levers": [
+        "L4",
+        "L5"
+      ],
+      "labels": "Targeted price rollback on Large Appliances, Exit marketplace for Large Appliances in North; route to own-site fulfilment with company-controlled deli",
+      "cost": 6700000.0,
+      "value_per_week": 3550000.0
+    },
+    "runner_up": {
+      "labels": "Exit marketplace for Large Appliances in North; route to own-site fulfilment with company-controlled delivery",
+      "cost": 5500000.0,
+      "value_per_week": 3300000.0
+    },
+    "persona_actions": [
+      {
+        "driver": "C1_delivery_capacity",
+        "controllable_lever": "L4",
+        "action": "Targeted price rollback on Large Appliances",
+        "expected_impact_inr_per_week": 250000.0,
+        "expected_impact_note": "relieves C4_price_position",
+        "cost_inr": 1200000.0,
+        "owner": "commercial",
+        "authority_required": "director",
+        "reversibility": "high",
+        "confidence": 0.629,
+        "monitoring_plan": {
+          "metric": "revenue",
+          "window_weeks": 4,
+          "success_threshold": ">= baseline",
+          "review_owner": "commercial"
+        },
+        "evidence_ref": "E1"
+      },
+      {
+        "driver": "C1_delivery_capacity",
+        "controllable_lever": "L5",
+        "action": "Exit marketplace for Large Appliances in North; route to own-site fulfilment with company-controlled delivery",
+        "expected_impact_inr_per_week": 3300000.0,
+        "expected_impact_note": "relieves C1_delivery_capacity, C2_listing_accuracy, C3_customer_retention",
+        "cost_inr": 5500000.0,
+        "owner": "category_head",
+        "authority_required": "vp",
+        "reversibility": "low",
+        "confidence": 0.629,
+        "monitoring_plan": {
+          "metric": "revenue",
+          "window_weeks": 6,
+          "success_threshold": ">= baseline + 0.20 Cr/wk",
+          "review_owner": "category_head"
+        },
+        "evidence_ref": "E1"
+      }
+    ],
+    "withheld_count": 0
+  },
+  "provenance": {
+    "sources": [
+      "warehouse",
+      "order_system",
+      "logistics_api",
+      "support_tickets",
+      "nps_survey"
+    ],
+    "lineage": "contracts/kpis.yaml",
+    "method_registry": "fulcrum/registry.py"
+  }
+}
