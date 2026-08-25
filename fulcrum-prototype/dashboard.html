@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fulcrum — Case File</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Libre+Caslon+Text:ital,wght@0,400;0,700;1,400&family=Special+Elite&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#15171B;
+    --ink-soft:#1D2025;
+    --ink-line: rgba(217,210,192,0.14);
+    --paper:#ECE4D3;
+    --paper-dim:#DFD4B9;
+    --paper-line: rgba(32,28,21,0.16);
+    --text-ink:#D9D2C0;
+    --text-ink-dim:#8B8577;
+    --text-paper:#211C14;
+    --text-paper-dim:#5B5343;
+    --accept:#3F6B4A;
+    --reject:#9B3A2C;
+    --amber:#A8752E;
+    --radius:2px;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--ink);
+    color:var(--text-ink);
+    font-family:'IBM Plex Sans',sans-serif;
+    font-size:15px;
+    line-height:1.5;
+    min-height:100vh;
+  }
+  h1,h2,h3{font-family:'Libre Caslon Text',serif; font-weight:400; margin:0 0 .4em 0;}
+  .stamp{
+    font-family:'Special Elite',monospace;
+    letter-spacing:.06em;
+    text-transform:uppercase;
+  }
+  .mono{font-family:'IBM Plex Mono',monospace;}
+
+  /* ---------- layout ---------- */
+  #app{
+    display:grid;
+    grid-template-columns:216px 1fr;
+    grid-template-rows:auto 1fr;
+    grid-template-areas:"header header" "nav main";
+    min-height:100vh;
+  }
+  header{
+    grid-area:header;
+    border-bottom:1px solid var(--ink-line);
+    padding:22px 28px 18px 28px;
+    display:flex;
+    align-items:flex-end;
+    justify-content:space-between;
+    flex-wrap:wrap;
+    gap:14px;
+  }
+  header .case-id{
+    font-size:11px;
+    color:var(--text-ink-dim);
+    margin-bottom:6px;
+  }
+  header h1{font-size:26px; color:var(--text-ink);}
+  header .kpi-line{font-size:13px; color:var(--text-ink-dim); margin-top:4px;}
+  header .kpi-line b{color:var(--text-ink); font-weight:600;}
+  .overall-stamp{
+    border:2px solid currentColor;
+    padding:6px 14px;
+    font-size:13px;
+    transform:rotate(-3deg);
+    border-radius:1px;
+    white-space:nowrap;
+  }
+  .overall-stamp.confident{color:var(--accept);}
+  .overall-stamp.abstain{color:var(--amber);}
+
+  nav{
+    grid-area:nav;
+    border-right:1px solid var(--ink-line);
+    padding:14px 0;
+    display:flex;
+    flex-direction:column;
+    gap:2px;
+  }
+  nav button{
+    all:unset;
+    cursor:pointer;
+    padding:10px 22px;
+    font-size:12.5px;
+    color:var(--text-ink-dim);
+    border-left:2px solid transparent;
+    display:flex;
+    flex-direction:column;
+    gap:1px;
+  }
+  nav button .tab-num{font-family:'IBM Plex Mono',monospace; font-size:10px; opacity:.7;}
+  nav button:hover{color:var(--text-ink); background:var(--ink-soft);}
+  nav button.active{
+    color:var(--text-ink);
+    background:var(--ink-soft);
+    border-left-color:var(--amber);
+  }
+
+  main{
+    grid-area:main;
+    padding:30px 34px 60px 34px;
+    max-width:980px;
+  }
+  .panel{display:none; animation:fade .25s ease;}
+  .panel.active{display:block;}
+  @keyframes fade{from{opacity:0; transform:translateY(4px);} to{opacity:1; transform:translateY(0);}}
+
+  .card{
+    background:var(--paper);
+    color:var(--text-paper);
+    border-radius:var(--radius);
+    padding:20px 22px;
+    margin-bottom:18px;
+    box-shadow:0 1px 0 rgba(0,0,0,.25), 0 8px 20px -12px rgba(0,0,0,.5);
+  }
+  .card h3{font-size:16px; color:var(--text-paper); margin-bottom:10px;}
+  .card p{margin:.35em 0; color:var(--text-paper-dim); font-size:13.5px;}
+  .card .hair{border-top:1px solid var(--paper-line); margin:12px 0;}
+  .grid2{display:grid; grid-template-columns:1fr 1fr; gap:16px;}
+  .grid3{display:grid; grid-template-columns:1fr 1fr 1fr; gap:16px;}
+  @media(max-width:760px){.grid2,.grid3{grid-template-columns:1fr;}}
+
+  table{width:100%; border-collapse:collapse; font-size:13px;}
+  th,td{text-align:left; padding:6px 8px; border-bottom:1px solid var(--paper-line);}
+  th{font-size:10.5px; text-transform:uppercase; letter-spacing:.05em; color:var(--text-paper-dim); font-weight:600;}
+  .status-pill{
+    font-size:10px; text-transform:uppercase; letter-spacing:.04em;
+    padding:2px 7px; border-radius:10px; font-weight:600;
+  }
+  .status-pill.fresh{background:rgba(63,107,74,.15); color:var(--accept);}
+  .status-pill.stale{background:rgba(155,58,44,.15); color:var(--reject);}
+
+  .bar-row{display:flex; align-items:center; gap:10px; margin:6px 0;}
+  .bar-label{width:110px; font-size:12px; color:var(--text-paper-dim); flex-shrink:0;}
+  .bar-track{flex:1; background:var(--paper-dim); height:8px; border-radius:4px; overflow:hidden;}
+  .bar-fill{height:100%; background:var(--text-paper); opacity:.75;}
+  .bar-val{width:56px; text-align:right; font-size:12px; font-family:'IBM Plex Mono',monospace;}
+
+  .funnel-step{display:flex; align-items:center; gap:10px; font-family:'IBM Plex Mono',monospace; font-size:13px; margin:4px 0;}
+  .funnel-num{font-weight:600;}
+  .funnel-arrow{opacity:.4;}
+
+  /* verdict stamps */
+  .case-card{position:relative; overflow:visible;}
+  .verdict-stamp{
+    position:absolute; top:16px; right:18px;
+    font-family:'Special Elite',monospace;
+    font-size:15px; letter-spacing:.08em;
+    padding:5px 12px; border:2.5px solid;
+    transform:rotate(6deg);
+    border-radius:2px;
+    opacity:.92;
+  }
+  .verdict-stamp.accepted{color:var(--accept); border-color:var(--accept);}
+  .verdict-stamp.rejected{color:var(--reject); border-color:var(--reject); transform:rotate(-5deg);}
+
+  /* triggers */
+  .trigger-row{display:flex; gap:10px; align-items:flex-start; padding:8px 0; border-bottom:1px solid var(--paper-line);}
+  .trigger-row:last-child{border-bottom:none;}
+  .trigger-dot{width:9px; height:9px; border-radius:50%; margin-top:5px; flex-shrink:0;}
+  .trigger-dot.ok{background:var(--accept);}
+  .trigger-dot.fired{background:var(--amber);}
+  .trigger-body b{font-family:'IBM Plex Mono',monospace; font-size:11.5px; letter-spacing:.03em;}
+  .trigger-body p{margin:2px 0 0 0;}
+  .discriminating{
+    margin-top:6px; padding:8px 10px; background:var(--paper-dim);
+    font-size:12px; border-left:2px solid var(--amber);
+  }
+
+  /* redaction */
+  .redact-bar{
+    background:#0F1113; color:var(--paper);
+    font-family:'Special Elite',monospace; font-size:12px;
+    padding:8px 12px; margin-top:10px; border-radius:2px;
+    display:flex; align-items:center; gap:8px;
+  }
+  .redact-bar::before{content:"■■■■"; letter-spacing:2px; opacity:.6;}
+
+  .persona-toggle{display:flex; gap:8px; margin-bottom:16px;}
+  .persona-btn{
+    all:unset; cursor:pointer;
+    padding:8px 16px; font-size:12.5px;
+    border:1px solid var(--ink-line); color:var(--text-ink-dim);
+    border-radius:2px;
+  }
+  .persona-btn.active{background:var(--ink); color:var(--text-ink); border-color:var(--ink);}
+  .narrative-text{white-space:pre-wrap; font-size:14px; line-height:1.65;}
+  .grounding-badge{
+    display:inline-flex; align-items:center; gap:6px;
+    font-size:11px; padding:3px 9px; border-radius:10px;
+    background:rgba(63,107,74,.15); color:var(--accept); margin-top:10px;
+  }
+
+  /* slider */
+  .slider-wrap{margin:18px 0 8px 0;}
+  input[type=range]{width:100%; accent-color:#8A6A2E;}
+  .slider-ticks{display:flex; justify-content:space-between; font-size:10px; color:var(--text-paper-dim); font-family:'IBM Plex Mono',monospace;}
+  .bundle-out{margin-top:14px; padding:16px; background:var(--paper-dim); border-radius:2px;}
+  .bundle-out .fam{font-size:10.5px; text-transform:uppercase; letter-spacing:.05em; color:var(--text-paper-dim);}
+  .bundle-out .figs{display:flex; gap:26px; margin-top:8px; flex-wrap:wrap;}
+  .bundle-out .fig-num{font-family:'IBM Plex Mono',monospace; font-size:20px; font-weight:600;}
+  .bundle-out .fig-label{font-size:10.5px; color:var(--text-paper-dim); text-transform:uppercase;}
+  .lever-list{margin-top:8px; font-size:13px;}
+
+  .stat-tile{background:var(--paper-dim); border-radius:2px; padding:12px 14px;}
+  .stat-tile .num{font-family:'IBM Plex Mono',monospace; font-size:22px; font-weight:600;}
+  .stat-tile .lbl{font-size:11px; color:var(--text-paper-dim); text-transform:uppercase; letter-spacing:.03em;}
+
+  .loading, .error{padding:60px; text-align:center; color:var(--text-ink-dim);}
+  .error code{background:var(--ink-soft); padding:2px 6px; border-radius:2px;}
+
+  @media(max-width:760px){
+    #app{grid-template-columns:1fr; grid-template-areas:"header" "nav" "main";}
+    nav{flex-direction:row; overflow-x:auto; border-right:none; border-bottom:1px solid var(--ink-line); padding:8px 10px;}
+    nav button{padding:8px 12px; border-left:none; border-bottom:2px solid transparent; flex-shrink:0;}
+    nav button.active{border-left:none; border-bottom-color:var(--amber);}
+    main{padding:20px;}
+    .grid3{grid-template-columns:1fr 1fr;}
+  }
+  @media (prefers-reduced-motion: reduce){ .panel{animation:none;} }
+</style>
+</head>
+<body>
+<div id="app">
+  <header>
+    <div>
+      <div class="case-id mono" id="case-id">CASE FILE — LOADING…</div>
+      <h1 id="case-title">Fulcrum</h1>
+      <div class="kpi-line" id="case-kpi-line"></div>
+    </div>
+    <div class="overall-stamp stamp" id="overall-stamp">…</div>
+  </header>
+  <nav id="nav"></nav>
+  <main id="main">
+    <div class="loading">Loading case file…</div>
+  </main>
+</div>
+
+<script>
+const TABS = [
+  {id:'overview', num:'00', label:'Overview'},
+  {id:'freshness', num:'S2', label:'Sources & Freshness'},
+  {id:'detection', num:'S3', label:'Detection'},
+  {id:'attribution', num:'S4a', label:'Attribution'},
+  {id:'causal', num:'S4b', label:'Causal Trial'},
+  {id:'confidence', num:'S5', label:'Confidence'},
+  {id:'decision', num:'S6', label:'Decision'},
+  {id:'narratives', num:'S7', label:'Narratives'},
+  {id:'method', num:'S9', label:'Method & Cost'},
+];
+
+const inr = v => {
+  const sign = v < 0 ? '−' : '';
+  const av = Math.abs(v);
+  if (av >= 1e7) return sign + '₹' + (av/1e7).toFixed(2) + ' Cr';
+  return sign + '₹' + (av/1e5).toFixed(1) + ' L';
+};
+const pct = (v,d=1) => (v>0?'+':'') + v.toFixed(d) + '%';
+const esc = s => (s+'').replace(/[&<>]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+
+let DATA = null;
+
+// Python's json.dump writes bare Infinity/-Infinity/NaN by default, which is not
+// valid JSON and every browser's JSON.parse rejects it outright. Sanitize before parsing.
+function parseLenientJSON(raw){
+  const cleaned = raw
+    .replace(/:(\s*)-Infinity/g, ':$1-1e999')
+    .replace(/:(\s*)Infinity/g, ':$1 1e999')
+    .replace(/:(\s*)NaN/g, ':$1null');
+  return JSON.parse(cleaned);
+}
+
+async function boot(){
+  try{
+    const res = await fetch('./outputs/run_report.json');
+    if(!res.ok) throw new Error('HTTP '+res.status);
+    DATA = parseLenientJSON(await res.text());
+  }catch(err){
+    document.getElementById('main').innerHTML = `
+      <div class="error">
+        <p>Could not load <code>./outputs/run_report.json</code>.</p>
+        <p>Serve this folder over HTTP — opening the file directly won't allow the fetch.</p>
+        <p class="mono">cd fulcrum-prototype && python3 -m http.server 8000</p>
+        <p>Then open the forwarded port and go to <code>/dashboard.html</code>.</p>
+        <p style="opacity:.6">(${esc(err.message)})</p>
+      </div>`;
+    return;
+  }
+  buildNav();
+  renderHeader();
+  renderAll();
+  showTab('overview');
+}
+
+function buildNav(){
+  const nav = document.getElementById('nav');
+  nav.innerHTML = TABS.map(t => `
+    <button data-tab="${t.id}">
+      <span class="tab-num mono">${t.num}</span>
+      <span>${t.label}</span>
+    </button>`).join('');
+  nav.querySelectorAll('button').forEach(b=>{
+    b.addEventListener('click', ()=> showTab(b.dataset.tab));
+  });
+}
+
+function showTab(id){
+  document.querySelectorAll('#nav button').forEach(b=>b.classList.toggle('active', b.dataset.tab===id));
+  document.querySelectorAll('.panel').forEach(p=>p.classList.toggle('active', p.id==='panel-'+id));
+}
+
+function renderHeader(){
+  const ev = DATA;
+  const conf = ev.confidence;
+  document.getElementById('case-id').textContent = 'FULCRUM CASE FILE — WEEK ENDING (see narratives)';
+  document.getElementById('case-title').textContent = 'Revenue movement, North / LargeAppliances / Marketplace / Consumer';
+  const attr = ev.attribution;
+  document.getElementById('case-kpi-line').innerHTML =
+    `Total gap vs forecast: <b>${inr(attr.total_gap)}</b> · ${attr.concentration.best_slice_share_of_gap_pct}% concentrated in one slice`;
+  const stampEl = document.getElementById('overall-stamp');
+  stampEl.textContent = conf.mode.toUpperCase() + ' — ' + (conf.confidence*100).toFixed(0) + '%';
+  stampEl.className = 'overall-stamp stamp ' + (conf.mode==='confident' ? 'confident' : 'abstain');
+}
+
+function renderAll(){
+  const main = document.getElementById('main');
+  main.innerHTML = TABS.map(t => `<div class="panel" id="panel-${t.id}"></div>`).join('');
+  renderOverview();
+  renderFreshness();
+  renderDetection();
+  renderAttribution();
+  renderCausal();
+  renderConfidence();
+  renderDecision();
+  renderNarratives();
+  renderMethod();
+}
+
+/* ---------------- OVERVIEW ---------------- */
+function renderOverview(){
+  const d = DATA;
+  const el = document.getElementById('panel-overview');
+  const accepted = d.hypotheses.find(h=>h.verdict==='accepted');
+  el.innerHTML = `
+    <div class="grid3">
+      <div class="card"><div class="stat-tile"><div class="num">${d.detection.n_material}</div><div class="lbl">Material findings</div></div></div>
+      <div class="card"><div class="stat-tile"><div class="num">${(d.confidence.confidence*100).toFixed(0)}%</div><div class="lbl">Movement explained</div></div></div>
+      <div class="card"><div class="stat-tile"><div class="num">${d.method_split.llm_share_pct}%</div><div class="lbl">Pipeline steps that are LLM</div></div></div>
+    </div>
+    <div class="card">
+      <h3>What happened</h3>
+      <p>Detection ran <b class="mono">${d.detection.n_tests}</b> slice × KPI tests; <b class="mono">${d.detection.n_material}</b> survived FDR correction and cleared the business-materiality bar.</p>
+      <p>The shortfall concentrates: <b>${d.attribution.concentration.best_slice_share_of_gap_pct}%</b> of the gap sits in one slice — ${Object.values(d.attribution.concentration.best_slice_rule).join(' / ')}.</p>
+      ${accepted ? `<p>Causal engine accepted <b>${esc(accepted.label)}</b> as the driver, explaining ${(d.confidence.confidence*100).toFixed(0)}% of the movement, worth ${inr(-Math.abs(d.attribution.total_gap*d.confidence.confidence))} /week.</p>` : ''}
+      <p>${d.confidence.unexplained_inr > 0 ? `${inr(d.confidence.unexplained_inr)}/week remains honestly unattributed rather than force-fit to the accepted cause.` : ''}</p>
+      <div class="hair"></div>
+      <p style="font-size:12px;">Use the tabs on the left to walk the case the way the engine built it: sources → detection → attribution → causal trial → confidence → decision → narratives → method &amp; cost.</p>
+    </div>
+  `;
+}
+
+/* ---------------- FRESHNESS (S2) ---------------- */
+function renderFreshness(){
+  const d = DATA;
+  const el = document.getElementById('panel-freshness');
+  const rows = d.freshness.map(f=>{
+    const util = Math.min(100, (f.age_hours/f.tolerance_hours)*100);
+    return `<tr>
+      <td>${esc(f.source)}</td>
+      <td class="mono">${esc(f.native_grain)}</td>
+      <td class="mono">${esc(f.latest_period)}</td>
+      <td class="mono">${f.age_hours}h / ${f.tolerance_hours}h</td>
+      <td><span class="status-pill ${f.status==='fresh'?'fresh':'stale'}">${esc(f.status)}</span></td>
+    </tr>`;
+  }).join('');
+  const sparse = d.sparse_history;
+  el.innerHTML = `
+    <div class="card">
+      <h3>Source freshness — cross-source reconciliation</h3>
+      <table>
+        <thead><tr><th>Source</th><th>Grain</th><th>Latest period</th><th>Age / tolerance</th><th>Status</th></tr></thead>
+        <tbody>${rows}</tbody>
+      </table>
+    </div>
+    <div class="card">
+      <h3>Grain policy — abstention in action</h3>
+      <p>NPS is monthly-grain with a one-month publication lag. Rather than interpolate it into a weekly claim, the semantic contract excludes it from weekly attribution and the engine says so explicitly.</p>
+    </div>
+    <div class="card">
+      <h3>Sparse-history scenario</h3>
+      <p><b>${esc(sparse.example)}</b> — only ${sparse.weeks} weeks of history.</p>
+      <p><b class="mono">${sparse.n_sparse_slices}</b> slices flagged sparse; <b class="mono">${sparse.n_invalid_intervals}</b> have no valid conformal interval at the target confidence and are marked unreliable rather than silently reported.</p>
+    </div>
+  `;
+}
+
+/* ---------------- DETECTION (S3) ---------------- */
+function renderDetection(){
+  const d = DATA.detection;
+  const el = document.getElementById('panel-detection');
+  const steps = [
+    {label:'Slice × KPI tests', val:d.n_tests},
+    {label:'Naively significant', val:d.n_naive_significant},
+    {label:'Survive FDR', val:d.n_survives_fdr},
+    {label:'Material', val:d.n_material},
+  ];
+  const max = d.n_tests;
+  el.innerHTML = `
+    <div class="card">
+      <h3>From raw tests to material findings</h3>
+      ${steps.map(s=>`
+        <div class="funnel-step">
+          <span style="width:170px">${s.label}</span>
+          <div class="bar-track" style="flex:1"><div class="bar-fill" style="width:${(s.val/max*100).toFixed(1)}%"></div></div>
+          <span class="funnel-num">${s.val.toLocaleString()}</span>
+        </div>`).join('')}
+      <p style="margin-top:10px;"><b class="mono">${d.false_alarms_avoided}</b> false alarms suppressed by multiplicity control.</p>
+    </div>
+    <div class="card">
+      <h3>Calibration proof</h3>
+      <div class="grid2">
+        <div class="stat-tile"><div class="num">${(d.empirical_coverage*100).toFixed(2)}%</div><div class="lbl">Empirical coverage</div></div>
+        <div class="stat-tile"><div class="num">${(d.target_coverage*100).toFixed(0)}%</div><div class="lbl">Target coverage</div></div>
+      </div>
+      <p style="margin-top:10px;">Measured on <b class="mono">${d.coverage_n.toLocaleString()}</b> held-out residuals — a genuine holdout, not the calibration set itself.</p>
+    </div>
+  `;
+}
+
+/* ---------------- ATTRIBUTION (S4a) ---------------- */
+function renderAttribution(){
+  const a = DATA.attribution;
+  const el = document.getElementById('panel-attribution');
+  const maxShap = Math.max(...Object.values(a.shapley));
+  const shapRows = Object.entries(a.shapley).sort((x,y)=>y[1]-x[1]).map(([k,v])=>`
+    <div class="bar-row">
+      <div class="bar-label">${esc(k)}</div>
+      <div class="bar-track"><div class="bar-fill" style="width:${(v/maxShap*100).toFixed(1)}%"></div></div>
+      <div class="bar-val">${v.toFixed(1)}%</div>
+    </div>`).join('');
+  const slice = Object.entries(a.concentration.best_slice_rule).map(([k,v])=>`${k}: <b>${esc(v)}</b>`).join(' · ');
+  const pvm = a.pvm, funnel = a.funnel;
+  el.innerHTML = `
+    <div class="card">
+      <h3>Shapley localisation power by dimension</h3>
+      ${shapRows}
+      <div class="hair"></div>
+      <p>Most specific slice retaining the shortfall — ${slice}</p>
+      <p>carries <b class="mono">${a.concentration.best_slice_share_of_gap_pct}%</b> of the gap (${a.concentration.n_leaves_for_80pct_of_shortfall} leaves needed for 80% of it, out of ${a.concentration.n_negative_leaves} negative leaves).</p>
+    </div>
+    <div class="grid2">
+      <div class="card">
+        <h3>Price / volume / mix</h3>
+        <p>units <b class="mono">${pct(pvm.units_change_pct)}</b>, ASP <b class="mono">${pct(pvm.asp_change_pct)}</b></p>
+        <p>Dominant term: <b>${pvm.dominant_term.toUpperCase()}</b> — this reads as a volume problem, not a pricing one.</p>
+        <p style="font-size:12px; opacity:.8;">volume ${inr(pvm.volume_effect)} · price ${inr(pvm.price_effect)} · mix ${inr(pvm.mix_effect)}</p>
+      </div>
+      <div class="card">
+        <h3>Funnel decomposition</h3>
+        <p>gross orders <b class="mono">${pct(funnel.gross_orders_change_pct)}</b>, cancellation rate <b class="mono">${(funnel.cancellation_rate_baseline*100).toFixed(1)}% → ${(funnel.cancellation_rate_current*100).toFixed(1)}%</b> (${pct(funnel.cancellation_rate_change_pp,1)}pp)</p>
+        <p>Dominant term: <b>${funnel.dominant_term.toUpperCase()}</b> — demand held, fulfilment broke.</p>
+      </div>
+    </div>
+  `;
+}
+
+/* ---------------- CAUSAL TRIAL (S4b) ---------------- */
+function renderCausal(){
+  const d = DATA;
+  const el = document.getElementById('panel-causal');
+  const evidence = (window.EVIDENCE || {});
+  const acceptedEv = (evidence.accepted_causes || [])[0];
+  const cards = d.hypotheses.map(h=>{
+    const isAccepted = h.verdict === 'accepted';
+    return `
+      <div class="card case-card">
+        <div class="verdict-stamp stamp ${isAccepted?'accepted':'rejected'}">${isAccepted?'Accepted':'Rejected'}</div>
+        <h3>${esc(h.hid)} — ${esc(h.label)}</h3>
+        <p>Source: ${esc(h.source)} · cause node: <span class="mono">${esc(h.cause_node)}</span> · start: <span class="mono">${esc(h.start)}</span></p>
+        ${h.reason ? `<div class="hair"></div><p><b>Killed by:</b> ${esc(h.reason)}</p>` : ''}
+        ${isAccepted && acceptedEv ? `
+          <div class="hair"></div>
+          <p><b>Mechanism:</b> ${esc(acceptedEv.mechanism_kpi)} ${pct(acceptedEv.mechanism_effect_pp)}pp</p>
+          <p><b>Impact:</b> ${inr(acceptedEv.revenue_impact_per_week)}/week</p>
+          <p><b>Survived:</b> ${acceptedEv.tests_passed} falsification tests</p>
+        ` : ''}
+      </div>`;
+  }).join('');
+  el.innerHTML = `
+    <div class="card">
+      <h3>3 candidates on trial — 1 survives</h3>
+      <p>Every hypothesis is prosecuted the same way: temporal precedence, difference-in-differences, synthetic control, placebo tests, dose-response, and a refutation suite that tries to break the engine's own finding.</p>
+    </div>
+    ${cards}
+  `;
+}
+
+/* ---------------- CONFIDENCE (S5) ---------------- */
+function renderConfidence(){
+  const c = DATA.confidence;
+  const el = document.getElementById('panel-confidence');
+  const triggerRows = c.triggers.map(t=>`
+    <div class="trigger-row">
+      <div class="trigger-dot ${t.fired?'fired':'ok'}"></div>
+      <div class="trigger-body">
+        <b>${esc(t.code)}</b> — ${t.fired ? '<span style="color:var(--amber)">FIRED</span>' : 'ok'}
+        <p>${esc(t.detail)}</p>
+        ${t.fired && t.discriminating_test ? `<div class="discriminating"><b>Discriminating test:</b> ${esc(t.discriminating_test)}</div>` : ''}
+      </div>
+    </div>`).join('');
+  el.innerHTML = `
+    <div class="grid2">
+      <div class="card">
+        <div class="stat-tile"><div class="num">${(c.confidence*100).toFixed(1)}%</div><div class="lbl">Explained fraction</div></div>
+        <p style="margin-top:10px;">${esc(c.rationale)}</p>
+      </div>
+      <div class="card">
+        <div class="stat-tile"><div class="num">${inr(c.unexplained_inr)}</div><div class="lbl">Unexplained / week</div></div>
+        <p style="margin-top:10px;">Left honestly unattributed rather than stretched to fit the accepted cause.</p>
+      </div>
+    </div>
+    <div class="card">
+      <h3>Abstention triggers — 7 enumerated checks</h3>
+      ${triggerRows}
+    </div>
+  `;
+}
+
+/* ---------------- DECISION (S6) ---------------- */
+function renderDecision(){
+  const d = DATA.decision;
+  const el = document.getElementById('panel-decision');
+  const sweep = d.budget_sweep;
+  el.innerHTML = `
+    <div class="card">
+      <h3>Budget vs. naive "fix everything"</h3>
+      <div class="grid2">
+        <div class="stat-tile"><div class="num">${inr(d.naive_repair_cost)}</div><div class="lbl">Naive repair-everything cost</div></div>
+        <div class="stat-tile"><div class="num">${inr(d.chosen.cost)}</div><div class="lbl">Fulcrum's chosen bundle</div></div>
+      </div>
+      <p style="margin-top:10px;">Solver cross-check (exhaustive vs. MILP): <b>${d.solvers_agree ? 'AGREE' : 'DISAGREE'}</b></p>
+    </div>
+    <div class="card">
+      <h3>Budget slider — the recommendation changes shape, not just size</h3>
+      <div class="slider-wrap">
+        <input type="range" id="budget-slider" min="0" max="${sweep.length-1}" value="${sweep.length-1}" step="1">
+        <div class="slider-ticks">${sweep.map(s=>`<span>${inr(s.budget_inr)}</span>`).join('')}</div>
+      </div>
+      <div class="bundle-out" id="bundle-out"></div>
+    </div>
+  `;
+  const slider = document.getElementById('budget-slider');
+  const renderBundle = (idx)=>{
+    const s = sweep[idx];
+    const out = document.getElementById('bundle-out');
+    out.innerHTML = `
+      <div class="fam">${s.family.replace(/_/g,' ')}</div>
+      <div class="lever-list">${s.chosen_labels.length ? s.chosen_labels.map(esc).join(' + ') : 'Do nothing — no bundle clears the value bar at this budget.'}</div>
+      <div class="figs">
+        <div><div class="fig-num">${inr(s.cost_inr)}</div><div class="fig-label">Cost</div></div>
+        <div><div class="fig-num">${inr(s.value_per_week_inr)}</div><div class="fig-label">Recovered / week</div></div>
+        <div><div class="fig-num">${isFinite(s.payback_weeks) ? s.payback_weeks.toFixed(1)+'w' : '—'}</div><div class="fig-label">Payback</div></div>
+        <div><div class="fig-num">${s.constraints_realised.length}</div><div class="fig-label">Constraints relieved</div></div>
+      </div>
+    `;
+  };
+  slider.addEventListener('input', e=> renderBundle(+e.target.value));
+  renderBundle(sweep.length-1);
+}
+
+/* ---------------- NARRATIVES (S7) ---------------- */
+function renderNarratives(){
+  const d = DATA;
+  const el = document.getElementById('panel-narratives');
+  const toggles = d.narratives.map((n,i)=>`<button class="persona-btn ${i===0?'active':''}" data-idx="${i}">${esc(n.persona.replace(/_/g,' '))}</button>`).join('');
+  el.innerHTML = `
+    <div class="card">
+      <h3>Persona narratives — same evidence, different depth</h3>
+      <div class="persona-toggle">${toggles}</div>
+      <div id="narrative-body"></div>
+    </div>
+    <div class="grid2">
+      <div class="card">
+        <h3>Entitlement check</h3>
+        <p>Leaked regions in ops-manager narrative: <b class="mono">${d.entitlement_check.leaked_regions.length}</b></p>
+        <p><b style="color:var(--accept)">${d.entitlement_check.passed ? 'PASS' : 'FAIL'}</b> — row-level security enforced in the narrative itself, not just the query.</p>
+      </div>
+      <div class="card">
+        <h3>Validator negative test</h3>
+        <p>Fabricated statistics were deliberately injected into a draft narrative to test the numeric-grounding validator.</p>
+        <p>Ungrounded numerals caught: <span class="mono">${d.validator_negative_test.ungrounded.map(esc).join(', ')}</span></p>
+        <p><b style="color:${d.validator_negative_test.passed ? 'var(--accept)' : 'var(--reject)'}">${d.validator_negative_test.passed ? 'PASS' : 'BLOCKED (as intended)'}</b> — fabrication does not reach the artefact.</p>
+      </div>
+    </div>
+  `;
+  const body = document.getElementById('narrative-body');
+  const show = (i)=>{
+    const n = d.narratives[i];
+    const withheldMatch = n.text.match(/(\d+) further action/);
+    body.innerHTML = `
+      <div class="narrative-text">${esc(n.text)}</div>
+      <span class="grounding-badge">✓ ${n.validation.numbers_in_text} numerals, ${n.validation.ungrounded.length} ungrounded</span>
+      ${withheldMatch ? `<div class="redact-bar">${withheldMatch[1]} action(s) withheld — require authority above this persona's clearance</div>` : ''}
+    `;
+  };
+  document.querySelectorAll('.persona-btn').forEach(b=>{
+    b.addEventListener('click', ()=>{
+      document.querySelectorAll('.persona-btn').forEach(x=>x.classList.remove('active'));
+      b.classList.add('active');
+      show(+b.dataset.idx);
+    });
+  });
+  show(0);
+}
+
+/* ---------------- METHOD & COST (S9) ---------------- */
+function renderMethod(){
+  const m = DATA.method_split;
+  const t = DATA.telemetry;
+  const el = document.getElementById('panel-method');
+  const cats = Object.entries(m.by_category).sort((a,b)=>b[1]-a[1]);
+  const maxCat = Math.max(...cats.map(c=>c[1]));
+  const catRows = cats.map(([k,v])=>`
+    <div class="bar-row">
+      <div class="bar-label">${esc(k.replace(/_/g,' '))}</div>
+      <div class="bar-track"><div class="bar-fill" style="width:${(v/maxCat*100).toFixed(1)}%"></div></div>
+      <div class="bar-val">${v}</div>
+    </div>`).join('');
+  const stageRows = t.stages.map(s=>`<tr><td>${esc(s.name)}</td><td class="mono">${esc(s.kind)}</td><td class="mono">${s.latency_ms.toFixed(1)} ms</td></tr>`).join('');
+  el.innerHTML = `
+    <div class="grid3">
+      <div class="card"><div class="stat-tile"><div class="num">${m.total_pipeline_steps}</div><div class="lbl">Pipeline steps</div></div></div>
+      <div class="card"><div class="stat-tile"><div class="num">${m.llm_steps}</div><div class="lbl">LLM steps (${m.llm_share_pct}%)</div></div></div>
+      <div class="card"><div class="stat-tile"><div class="num">$${t.estimated_cost.usd.toFixed(4)}</div><div class="lbl">Estimated cost / insight</div></div></div>
+    </div>
+    <div class="card">
+      <h3>Steps by category</h3>
+      ${catRows}
+      <div class="hair"></div>
+      <p>${esc(m.llm_scope)}</p>
+    </div>
+    <div class="card">
+      <h3>Telemetry — latency by stage</h3>
+      <p>Total latency: <b class="mono">${(t.total_latency_ms/1000).toFixed(1)}s</b> · LLM share of latency: <b class="mono">${t.llm_vs_non_llm.llm_latency_pct}%</b></p>
+      <table>
+        <thead><tr><th>Stage</th><th>Kind</th><th>Latency</th></tr></thead>
+        <tbody>${stageRows}</tbody>
+      </table>
+    </div>
+  `;
+}
+
+/* pull evidence_object.json too, for causal-trial mechanism detail */
+(async function(){
+  try{
+    const r = await fetch('./outputs/evidence_object.json');
+    if(r.ok) window.EVIDENCE = parseLenientJSON(await r.text());
+  }catch(e){ /* optional enrichment only */ }
+  boot();
+})();
+</script>
+</body>
+</html>
