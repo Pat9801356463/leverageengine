@@ -1,0 +1,184 @@
+# =====================================================================
+# KPI SEMANTIC CONTRACT
+# ---------------------------------------------------------------------
+# Round-2 requirement: "A lightweight KPI or semantic contract covering
+# definitions, calculations, drivers, thresholds, lineage and access
+# restrictions."
+#
+# This file is the single source of truth for what a metric MEANS. No
+# module computes a KPI without reading its contract first - that is what
+# stops "revenue" meaning three different things in three modules.
+# =====================================================================
+
+version: "2.0"
+analysis_grain: weekly
+calendar: W-SUN                 # weeks end Sunday; fiscal year starts April (India)
+fiscal_year_start_month: 4
+
+# ---------------------------------------------------------------------
+# Causal DAG. Declared, curated, and human-approved - NOT learned from
+# data. Structure learning (PC / NOTEARS) may PROPOSE edges; a domain
+# owner approves them. Claiming a learned causal graph would be
+# indefensible, so we don't.
+# ---------------------------------------------------------------------
+causal_dag:
+  edges:
+    - {from: logistics_vendor,   to: delivery_sla_pct,   sign: positive, owner: supply_chain}
+    - {from: delivery_sla_pct,   to: cancellation_rate,  sign: negative, owner: supply_chain}
+    - {from: delivery_sla_pct,   to: ticket_volume,      sign: negative, owner: support}
+    - {from: cancellation_rate,  to: net_units,          sign: negative, owner: commercial}
+    - {from: cancellation_rate,  to: ticket_volume,      sign: positive, owner: support}
+    - {from: listing_accuracy,   to: cancellation_rate,  sign: negative, owner: ecommerce}
+    - {from: net_units,          to: revenue,            sign: positive, owner: commercial}
+    - {from: asp,                to: revenue,            sign: positive, owner: commercial}
+    - {from: list_price,         to: asp,                sign: positive, owner: commercial}
+    - {from: list_price,         to: gross_orders,       sign: negative, owner: commercial}
+    - {from: competitor_promo,   to: gross_orders,       sign: negative, owner: commercial}
+    - {from: gross_orders,       to: net_units,          sign: positive, owner: commercial}
+    - {from: nps,                to: gross_orders,       sign: positive, owner: marketing}
+
+kpis:
+
+  # -------------------------------------------------------------------
+  - name: revenue
+    display_name: Net Revenue
+    definition: >
+      Net realised revenue after cancellations, excluding tax and shipping.
+      Recognised on dispatch, not on order placement.
+    calculation: net_units * asp
+    unit: INR
+    source_system: warehouse
+    native_grain: daily x region x product_line x channel x segment
+    refresh_cadence_minutes: 1440
+    staleness_tolerance_hours: 36
+    aggregation: sum
+    dimensions: [region, product_line, channel, segment]
+    upstream_drivers: [net_units, asp]
+    materiality:
+      statistical_alpha: 0.05
+      fdr_q: 0.10
+      min_business_impact_inr: 1500000      # ~Rs 15L/week - below this, don't alert
+    lineage:
+      - {step: 1, system: order_system, object: fact_orders}
+      - {step: 2, system: warehouse,    object: dim_product_price}
+      - {step: 3, system: warehouse,    object: agg_revenue_weekly}
+    access:
+      row_level_security: region
+      restricted_columns: [asp]
+      allowed_roles: [category_head, ops_manager, cfo, analyst]
+
+  # -------------------------------------------------------------------
+  - name: cancellation_rate
+    display_name: Order Cancellation Rate
+    definition: >
+      Share of gross orders cancelled before dispatch, by either customer
+      or system. Excludes post-delivery returns.
+    calculation: cancellations / gross_orders
+    unit: ratio
+    source_system: order_system
+    native_grain: transaction
+    refresh_cadence_minutes: 5
+    staleness_tolerance_hours: 2
+    aggregation: weighted_mean
+    weight_by: gross_orders                 # NEVER a plain mean of ratios
+    dimensions: [region, product_line, channel, segment]
+    upstream_drivers: [delivery_sla_pct, listing_accuracy]
+    materiality:
+      statistical_alpha: 0.05
+      fdr_q: 0.10
+      min_business_impact_pp: 1.5           # percentage points
+    lineage:
+      - {step: 1, system: order_system, object: fact_order_status_events}
+      - {step: 2, system: order_system, object: agg_cancellations_weekly}
+    access:
+      row_level_security: region
+      restricted_columns: []
+      allowed_roles: [category_head, ops_manager, cfo, analyst]
+
+  # -------------------------------------------------------------------
+  - name: delivery_sla_pct
+    display_name: Delivery SLA Attainment
+    definition: >
+      Share of scheduled deliveries completed within the promised window.
+      Sourced from the 3PL partner API, not from internal estimates.
+    calculation: on_time_deliveries / scheduled_deliveries
+    unit: ratio
+    source_system: logistics_api
+    native_grain: hourly x region x channel
+    refresh_cadence_minutes: 60
+    staleness_tolerance_hours: 6
+    aggregation: weighted_mean
+    weight_by: scheduled_deliveries
+    dimensions: [region, product_line, channel, segment]
+    upstream_drivers: [logistics_vendor]
+    materiality:
+      statistical_alpha: 0.05
+      fdr_q: 0.10
+      min_business_impact_pp: 2.0
+    lineage:
+      - {step: 1, system: logistics_api, object: api_delivery_events}
+      - {step: 2, system: warehouse,     object: agg_sla_weekly}
+    access:
+      row_level_security: region
+      restricted_columns: []
+      allowed_roles: [ops_manager, category_head, analyst]
+
+  # -------------------------------------------------------------------
+  - name: ticket_volume
+    display_name: Support Ticket Volume
+    definition: Count of inbound support contacts, deduplicated by order id.
+    calculation: count(distinct ticket_id)
+    unit: count
+    source_system: support_tickets
+    native_grain: daily x region x product_line
+    refresh_cadence_minutes: 1440
+    staleness_tolerance_hours: 36
+    aggregation: sum
+    dimensions: [region, product_line, channel]
+    upstream_drivers: [delivery_sla_pct, cancellation_rate]
+    materiality:
+      statistical_alpha: 0.05
+      fdr_q: 0.10
+      min_business_impact_count: 150
+    lineage:
+      - {step: 1, system: support_tickets, object: raw_tickets}
+      - {step: 2, system: support_tickets, object: agg_tickets_weekly}
+    access:
+      row_level_security: region
+      restricted_columns: [ticket_text]     # free text may contain PII
+      allowed_roles: [ops_manager, analyst, category_head]
+
+  # -------------------------------------------------------------------
+  # DELIBERATELY STALE / COARSE. This contract is what lets the engine
+  # REFUSE to attribute a weekly movement to NPS, instead of silently
+  # upsampling a monthly number and inventing precision.
+  # -------------------------------------------------------------------
+  - name: nps
+    display_name: Net Promoter Score
+    definition: Rolling NPS from the monthly post-purchase survey panel.
+    calculation: pct_promoters - pct_detractors
+    unit: score
+    source_system: nps_survey
+    native_grain: monthly x region
+    refresh_cadence_minutes: 43200          # monthly
+    staleness_tolerance_hours: 1080         # 45 days
+    aggregation: mean
+    dimensions: [region]
+    upstream_drivers: [delivery_sla_pct, cancellation_rate]
+    grain_policy:
+      can_support_weekly_claims: false
+      reason: >
+        Native grain is monthly and the panel publishes with a one-month lag.
+        Any weekly attribution to NPS would be interpolation presented as
+        evidence. The engine must abstain instead.
+    materiality:
+      statistical_alpha: 0.05
+      fdr_q: 0.10
+      min_business_impact_points: 3.0
+    lineage:
+      - {step: 1, system: nps_survey, object: survey_responses}
+      - {step: 2, system: nps_survey, object: agg_nps_monthly}
+    access:
+      row_level_security: region
+      restricted_columns: []
+      allowed_roles: [category_head, cfo, analyst]

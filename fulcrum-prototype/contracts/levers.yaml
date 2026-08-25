@@ -1,0 +1,230 @@
+# =====================================================================
+# LEVER INVENTORY  +  CONSTRAINT VALUE MODEL  +  PERSONAS
+# ---------------------------------------------------------------------
+# The central design claim of Fulcrum lives in this file.
+#
+# An action has NO intrinsic value. An action is a priced way of relieving
+# a set of constraints. Value belongs to the resulting CONSTRAINT STATE.
+#
+# Why this matters:
+#   * redundancy  - two actions relieving the same constraint contribute a
+#                   UNION, not a sum. No double-counting, no special case.
+#   * complementarity - relieving one of two dependent constraints yields
+#                   ZERO. Falls out of `requires`, not from a hand-coded rule.
+#   * structural moves - "exit the channel" is simply an action whose
+#                   relieved-set covers three constraints at once. It does
+#                   not have to be the repair of anything, which is why a
+#                   diagnosis-driven system can never propose it.
+#
+# The lever catalogue is declared INDEPENDENT of any diagnosis. That is
+# deliberate: if levers were generated from diagnosed causes, the "buy a
+# new phone instead of upgrading the battery and the GPU" option could
+# never appear.
+# =====================================================================
+
+version: "2.0"
+
+# ---------------------------------------------------------------------
+# CONSTRAINTS: what is limiting the objective, and what relieving it is
+# worth per week. `requires` encodes serial dependency.
+# ---------------------------------------------------------------------
+constraints:
+
+  - id: C1_delivery_capacity
+    label: Delivery fulfilment capacity in North
+    blocked_value_inr_per_week: 1900000
+    requires: []
+    owner: supply_chain
+    evidence_kpi: delivery_sla_pct
+
+  - id: C2_listing_accuracy
+    label: Marketplace listings show stale delivery promises
+    blocked_value_inr_per_week: 600000
+    requires: [C1_delivery_capacity]     # fixing listings alone achieves nothing
+    owner: ecommerce                      # while deliveries are still failing
+    evidence_kpi: cancellation_rate
+
+  - id: C3_customer_retention
+    label: Cancelled customers churning out of the base
+    blocked_value_inr_per_week: 800000
+    requires: [C1_delivery_capacity]
+    owner: marketing
+    evidence_kpi: cancellation_rate
+
+  - id: C4_price_position
+    label: Price premium vs competitor in Large Appliances
+    blocked_value_inr_per_week: 250000
+    requires: []
+    owner: commercial
+    evidence_kpi: revenue
+
+# ---------------------------------------------------------------------
+# LEVERS: (cost, constraints_relieved, owner, authority, reversibility,
+# monitoring). `owner` and `authority_level` implement DECISION RIGHTS -
+# a persona is only shown levers it can actually authorise.
+# ---------------------------------------------------------------------
+levers:
+
+  # ---- REPAIR family -------------------------------------------------
+  - id: L1
+    label: Renegotiate 3PL SLA / revert to previous logistics vendor
+    family: repair
+    cost_inr: 4000000
+    relieves: [C1_delivery_capacity]
+    owner: supply_chain
+    authority_level: director
+    reversibility: high
+    lead_time_weeks: 2
+    monitoring_metric: delivery_sla_pct
+    monitoring_window_weeks: 3
+    success_threshold: ">= 0.92"
+
+  - id: L2
+    label: Rebuild marketplace listing-integration for live delivery promises
+    family: repair
+    cost_inr: 2500000
+    relieves: [C2_listing_accuracy]
+    owner: ecommerce
+    authority_level: director
+    reversibility: medium
+    lead_time_weeks: 6
+    monitoring_metric: cancellation_rate
+    monitoring_window_weeks: 4
+    success_threshold: "<= 0.09"
+
+  - id: L3
+    label: Compensation vouchers + win-back campaign for cancelled orders
+    family: repair
+    cost_inr: 3000000
+    relieves: [C3_customer_retention]
+    owner: marketing
+    authority_level: manager
+    reversibility: high
+    lead_time_weeks: 1
+    monitoring_metric: cancellation_rate
+    monitoring_window_weeks: 4
+    success_threshold: "<= 0.10"
+
+  - id: L4
+    label: Targeted price rollback on Large Appliances
+    family: repair
+    cost_inr: 1200000
+    relieves: [C4_price_position]
+    owner: commercial
+    authority_level: director
+    reversibility: high
+    lead_time_weeks: 1
+    monitoring_metric: revenue
+    monitoring_window_weeks: 4
+    success_threshold: ">= baseline"
+
+  # ---- STRUCTURAL family --------------------------------------------
+  # Not the repair of any diagnosed cause. Only reachable because the
+  # catalogue is declared independently of diagnosis.
+  - id: L5
+    label: Exit marketplace for Large Appliances in North; route to own-site
+           fulfilment with company-controlled delivery
+    family: structural
+    cost_inr: 5500000
+    relieves: [C1_delivery_capacity, C2_listing_accuracy, C3_customer_retention]
+    owner: category_head
+    authority_level: vp
+    reversibility: low
+    lead_time_weeks: 4
+    monitoring_metric: revenue
+    monitoring_window_weeks: 6
+    success_threshold: ">= baseline + 0.20 Cr/wk"
+
+  - id: L6
+    label: Bring North last-mile in-house for Large Appliances only
+    family: structural
+    cost_inr: 8500000
+    relieves: [C1_delivery_capacity, C3_customer_retention]
+    owner: supply_chain
+    authority_level: vp
+    reversibility: low
+    lead_time_weeks: 10
+    monitoring_metric: delivery_sla_pct
+    monitoring_window_weeks: 8
+    success_threshold: ">= 0.95"
+
+  # ---- GOAL-MODIFYING family ----------------------------------------
+  # Solves the problem by moving the goalpost rather than fixing anything.
+  - id: L7
+    label: Suppress Large Appliance listings in affected North pincodes
+           until SLA recovers
+    family: goal_modifying
+    cost_inr: 400000
+    relieves: [C2_listing_accuracy]
+    owner: ecommerce
+    authority_level: manager
+    reversibility: high
+    lead_time_weeks: 1
+    monitoring_metric: cancellation_rate
+    monitoring_window_weeks: 2
+    success_threshold: "<= 0.10"
+
+  # ---- NULL ----------------------------------------------------------
+  - id: L0
+    label: Do nothing (baseline)
+    family: null_action
+    cost_inr: 0
+    relieves: []
+    owner: none
+    authority_level: manager
+    reversibility: high
+    lead_time_weeks: 0
+    monitoring_metric: revenue
+    monitoring_window_weeks: 4
+    success_threshold: "n/a"
+
+# ---------------------------------------------------------------------
+# OBJECTIVE + CAPITAL ENVELOPE (Phase 0 of the architecture)
+# ---------------------------------------------------------------------
+objective:
+  metric: revenue
+  scope: {region: North, product_line: LargeAppliances}
+  target_recovery_inr_per_week: 3000000
+  horizon_weeks: 13
+  hard_constraints:
+    - {metric: gross_margin_pct, operator: ">=", value: 31.0}
+
+capital_envelope:
+  total_budget_inr: 7000000
+  per_period_cap_inr: 7000000
+  currency: INR
+
+# ---------------------------------------------------------------------
+# PERSONAS: entitlements + how much depth each one receives.
+# row_scope implements row-level security; it is enforced in the
+# NARRATIVE, not only in the query.
+# ---------------------------------------------------------------------
+personas:
+
+  - id: ops_manager_north
+    display_name: Regional Operations Manager (North)
+    role: ops_manager
+    row_scope: {region: [North]}
+    max_authority_level: manager
+    insight_depth: operational
+    channel: slack
+    wants:
+      - the single most actionable lever inside their authority
+      - the monitoring metric they personally own
+    excludes:
+      - portfolio-level budget trade-offs
+      - other regions' figures
+      - restricted columns (asp)
+
+  - id: category_head_appliances
+    display_name: Category Head, Large Appliances
+    role: category_head
+    row_scope: {region: ALL}
+    max_authority_level: vp
+    insight_depth: strategic
+    channel: email
+    wants:
+      - the recommended bundle and the runner-up, with the reason it lost
+      - budget consumption against the envelope
+      - what remains unexplained
+    excludes: []
