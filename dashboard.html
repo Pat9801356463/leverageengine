@@ -1,809 +1,1322 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="no-js">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Fulcrum — Case File</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Fulcrum — Case File · North / Large Appliances · ₹42.6 L per week</title>
+<meta name="description" content="Fulcrum: North / LargeAppliances / Marketplace is losing ₹42.6 L per week, −1.80% vs forecast. One cause accepted, two rejected on two different grounds, ₹25.1 L per week reported as unexplained. Drag the capital envelope to see the recommendation change shape.">
+<meta name="theme-color" content="#0B0A0F">
+
+<!-- Link previews (WhatsApp / Slack / the submission form) read these, not the DOM. -->
+<meta property="og:image" content="https://pat9801356463.github.io/leverageengine/preview.png">
+<link rel="canonical" href="https://pat9801356463.github.io/leverageengine/dashboard.html">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Fulcrum">
+<meta property="og:title" content="Fulcrum — Case File · North / Large Appliances">
+<meta property="og:description" content="₹42.6 L per week, −1.80% vs forecast. One cause survived falsification, two were rejected on two different mechanisms, ₹25.1 L per week is reported as unexplained. The last mile of BI isn't explanation — it's allocation.">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Fulcrum — Case File · North / Large Appliances">
+<meta name="twitter:description" content="₹42.6 L per week. One cause accepted, two rejected, ₹25.1 L unexplained and reported as such.">
+
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Libre+Caslon+Text:ital,wght@0,400;0,700;1,400&family=Special+Elite&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
-  :root{
-    --ink:#15171B;
-    --ink-soft:#1D2025;
-    --ink-line: rgba(217,210,192,0.14);
-    --paper:#ECE4D3;
-    --paper-dim:#DFD4B9;
-    --paper-line: rgba(32,28,21,0.16);
-    --text-ink:#D9D2C0;
-    --text-ink-dim:#8B8577;
-    --text-paper:#211C14;
-    --text-paper-dim:#5B5343;
-    --accept:#3F6B4A;
-    --reject:#9B3A2C;
-    --amber:#A8752E;
-    --radius:2px;
-  }
-  *{box-sizing:border-box;}
-  html,body{margin:0;padding:0;}
-  body{
-    background:var(--ink);
-    color:var(--text-ink);
-    font-family:'IBM Plex Sans',sans-serif;
-    font-size:15px;
-    line-height:1.5;
-    min-height:100vh;
-  }
-  h1,h2,h3{font-family:'Libre Caslon Text',serif; font-weight:400; margin:0 0 .4em 0;}
-  .stamp{
-    font-family:'Special Elite',monospace;
-    letter-spacing:.06em;
-    text-transform:uppercase;
-  }
-  .mono{font-family:'IBM Plex Mono',monospace;}
+:root{
+  --bg:#0B0A0F; --panel:#151322; --panel2:#1D1A2C; --well:#100E1C;
+  --rule:#332E4D;
+  --ink:#F4F2F9; --soft:#BDB8D6; --faint:#8C86AC;
+  --purple:#C273FF; --purpleDeep:#B44DFF; --purpleDim:#6B2E9E;
+  --amber:#FFB74D; --green:#3DDBA0; --red:#FF7080;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-text-size-adjust:100%}
+body{background:var(--bg);color:var(--ink);
+  font-family:'Space Grotesk',system-ui,-apple-system,Segoe UI,sans-serif;line-height:1.45;
+  padding:30px 20px 80px;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+.wrap{max-width:1120px;margin:0 auto}
+.mono{font-family:'JetBrains Mono',ui-monospace,SFMono-Regular,Consolas,monospace}
 
-  /* ---------- layout ---------- */
-  #app{
-    display:grid;
-    grid-template-columns:216px 1fr;
-    grid-template-rows:auto 1fr;
-    grid-template-areas:"header header" "nav main";
-    min-height:100vh;
-  }
-  header{
-    grid-area:header;
-    border-bottom:1px solid var(--ink-line);
-    padding:22px 28px 18px 28px;
-    display:flex;
-    align-items:flex-end;
-    justify-content:space-between;
-    flex-wrap:wrap;
-    gap:14px;
-  }
-  header .case-id{
-    font-size:11px;
-    color:var(--text-ink-dim);
-    margin-bottom:6px;
-  }
-  header h1{font-size:26px; color:var(--text-ink);}
-  header .kpi-line{font-size:13px; color:var(--text-ink-dim); margin-top:4px;}
-  header .kpi-line b{color:var(--text-ink); font-weight:600;}
-  .overall-stamp{
-    border:2px solid currentColor;
-    padding:6px 14px;
-    font-size:13px;
-    transform:rotate(-3deg);
-    border-radius:1px;
-    white-space:nowrap;
-  }
-  .overall-stamp.confident{color:var(--accept);}
-  .overall-stamp.abstain{color:var(--amber);}
+/* progressive enhancement: with JS off the slider is hidden and the page
+   presents its static ₹70 L verdict rather than an input that does nothing. */
+.no-js .jsOnly{display:none !important}
+.js .noJsOnly{display:none !important}
 
-  nav{
-    grid-area:nav;
-    border-right:1px solid var(--ink-line);
-    padding:14px 0;
-    display:flex;
-    flex-direction:column;
-    gap:2px;
-  }
-  nav button{
-    all:unset;
-    cursor:pointer;
-    padding:10px 22px;
-    font-size:12.5px;
-    color:var(--text-ink-dim);
-    border-left:2px solid transparent;
-    display:flex;
-    flex-direction:column;
-    gap:1px;
-  }
-  nav button .tab-num{font-family:'IBM Plex Mono',monospace; font-size:10px; opacity:.7;}
-  nav button:hover{color:var(--text-ink); background:var(--ink-soft);}
-  nav button.active{
-    color:var(--text-ink);
-    background:var(--ink-soft);
-    border-left-color:var(--amber);
-  }
+/* ---------- static verdict header: renders with NO JavaScript ---------- */
+header{border:1px solid var(--rule);border-left:3px solid var(--purpleDeep);
+  background:var(--panel);border-radius:4px 4px 0 0;padding:22px 24px;
+  margin-bottom:0;border-bottom:none}
+.kick{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.18em;
+  text-transform:uppercase;color:var(--purple);margin-bottom:10px}
+h1{font-size:clamp(22px,3.3vw,32px);font-weight:700;letter-spacing:-.02em;line-height:1.15}
+h1 span{color:var(--purple)}
+.vsub{margin-top:10px;color:var(--soft);font-size:14.5px;max-width:78ch}
+.vsub b{color:var(--ink);font-weight:500}
+.vrow{display:flex;flex-wrap:wrap;gap:14px 26px;
+  background:var(--panel);border:1px solid var(--rule);border-top:1px solid var(--rule);
+  border-left:3px solid var(--purpleDeep);border-radius:0 0 4px 4px;
+  padding:15px 24px;margin-bottom:16px}
+.vstat b{display:block;font-family:'JetBrains Mono',monospace;font-size:18px;color:var(--ink)}
+.vstat i{font-style:normal;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--faint)}
 
-  main{
-    grid-area:main;
-    padding:30px 34px 60px 34px;
-    max-width:980px;
-  }
-  .panel{display:none; animation:fade .25s ease;}
-  .panel.active{display:block;}
-  @keyframes fade{from{opacity:0; transform:translateY(4px);} to{opacity:1; transform:translateY(0);}}
+/* ---------- the thesis, stated before anything is interactive ---------- */
+.thesis{border:1px solid var(--rule);border-left:3px solid var(--amber);
+  background:rgba(255,183,77,.05);border-radius:0 4px 4px 0;padding:16px 20px;margin-bottom:8px}
+.thesis p{font-size:15px;color:var(--soft);max-width:88ch}
+.thesis b{color:var(--ink);font-weight:500}
+.thesis .punch{display:block;margin-top:8px;color:var(--amber);font-weight:700;font-size:15.5px}
 
-  .card{
-    background:var(--paper);
-    color:var(--text-paper);
-    border-radius:var(--radius);
-    padding:20px 22px;
-    margin-bottom:18px;
-    box-shadow:0 1px 0 rgba(0,0,0,.25), 0 8px 20px -12px rgba(0,0,0,.5);
-  }
-  .card h3{font-size:16px; color:var(--text-paper); margin-bottom:10px;}
-  .card p{margin:.35em 0; color:var(--text-paper-dim); font-size:13.5px;}
-  .card .hair{border-top:1px solid var(--paper-line); margin:12px 0;}
-  .grid2{display:grid; grid-template-columns:1fr 1fr; gap:16px;}
-  .grid3{display:grid; grid-template-columns:1fr 1fr 1fr; gap:16px;}
-  @media(max-width:760px){.grid2,.grid3{grid-template-columns:1fr;}}
+h2{font-size:12px;font-family:'JetBrains Mono',monospace;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--purple);margin:34px 0 13px}
+h3{font-size:15px;font-weight:700;letter-spacing:-.01em}
+.panel{background:var(--panel);border:1px solid var(--rule);border-radius:4px;padding:20px 22px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+/* grid/flex children default to min-width:auto, which lets a nowrap table cell
+   push the whole column — and the page — wider than the viewport on a phone. */
+.grid2>*,.grid3>*{min-width:0}
+.tableWrap{overflow-x:auto;-webkit-overflow-scrolling:touch;max-width:100%}
 
-  table{width:100%; border-collapse:collapse; font-size:13px;}
-  th,td{text-align:left; padding:6px 8px; border-bottom:1px solid var(--paper-line);}
-  th{font-size:10.5px; text-transform:uppercase; letter-spacing:.05em; color:var(--text-paper-dim); font-weight:600;}
-  .status-pill{
-    font-size:10px; text-transform:uppercase; letter-spacing:.04em;
-    padding:2px 7px; border-radius:10px; font-weight:600;
-  }
-  .status-pill.fresh{background:rgba(63,107,74,.15); color:var(--accept);}
-  .status-pill.stale{background:rgba(155,58,44,.15); color:var(--reject);}
+/* ---------- hero slider ---------- */
+.hero{background:linear-gradient(180deg,#191533,#121020);
+  border:1px solid var(--purpleDim);border-radius:5px;padding:22px 24px 24px}
+.sliderTop{display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:14px}
+.capLabel{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--faint)}
+.budgetVal{font-family:'JetBrains Mono',monospace;font-size:clamp(28px,5vw,34px);
+  font-weight:700;color:var(--purple);line-height:1.1}
+.shapeNote{font-size:13px;color:var(--soft);max-width:44ch}
+.shapeNote b{color:var(--ink)}
 
-  .bar-row{display:flex; align-items:center; gap:10px; margin:6px 0;}
-  .bar-label{width:110px; font-size:12px; color:var(--text-paper-dim); flex-shrink:0;}
-  .bar-track{flex:1; background:var(--paper-dim); height:8px; border-radius:4px; overflow:hidden;}
-  .bar-fill{height:100%; background:var(--text-paper); opacity:.75;}
-  .bar-val{width:56px; text-align:right; font-size:12px; font-family:'IBM Plex Mono',monospace;}
+input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:44px;
+  background:transparent;margin-top:10px;cursor:grab;touch-action:none;display:block}
+input[type=range]:active{cursor:grabbing}
+input[type=range]:focus{outline:none}
+input[type=range]:focus-visible::-webkit-slider-thumb{box-shadow:0 0 0 4px rgba(194,115,255,.35)}
+input[type=range]:focus-visible::-moz-range-thumb{box-shadow:0 0 0 4px rgba(194,115,255,.35)}
+input[type=range]::-webkit-slider-runnable-track{height:6px;border-radius:3px;
+  background:linear-gradient(90deg,var(--purpleDeep) var(--pct,58%),#2A2640 var(--pct,58%))}
+input[type=range]::-moz-range-track{height:6px;border-radius:3px;background:#2A2640}
+input[type=range]::-moz-range-progress{height:6px;border-radius:3px;background:var(--purpleDeep)}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:30px;height:30px;
+  border-radius:50%;background:#fff;border:5px solid var(--purpleDeep);margin-top:-12px;
+  box-shadow:0 3px 16px rgba(180,77,255,.55)}
+input[type=range]::-moz-range-thumb{width:22px;height:22px;border-radius:50%;
+  background:#fff;border:5px solid var(--purpleDeep);box-shadow:0 3px 16px rgba(180,77,255,.55)}
+.ticks{display:flex;justify-content:space-between;font-family:'JetBrains Mono',monospace;
+  font-size:11px;color:var(--faint);margin-top:-2px}
 
-  .funnel-step{display:flex; align-items:center; gap:10px; font-family:'IBM Plex Mono',monospace; font-size:13px; margin:4px 0;}
-  .funnel-num{font-weight:600;}
-  .funnel-arrow{opacity:.4;}
+/* value-vs-budget curve — the shape of the answer, drawn from the same model */
+.curveWrap{margin-top:14px;position:relative}
+.curveCap{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--faint);margin-bottom:5px}
+svg.curve{width:100%;height:auto;display:block;overflow:visible}
+.curveArea{fill:rgba(180,77,255,.13)}
+.curveLine{fill:none;stroke:var(--purpleDeep);stroke-width:2.5;vector-effect:non-scaling-stroke;
+  stroke-linejoin:round}
+.curveMark line{stroke:var(--amber);stroke-width:1.5;stroke-dasharray:3 3;vector-effect:non-scaling-stroke}
+.curveMark circle{fill:var(--amber);stroke:#121020;stroke-width:2;vector-effect:non-scaling-stroke}
 
-  /* verdict stamps */
-  .case-card{position:relative; overflow:visible;}
-  .verdict-stamp{
-    position:absolute; top:16px; right:18px;
-    font-family:'Special Elite',monospace;
-    font-size:15px; letter-spacing:.08em;
-    padding:5px 12px; border:2.5px solid;
-    transform:rotate(6deg);
-    border-radius:2px;
-    opacity:.92;
-  }
-  .verdict-stamp.accepted{color:var(--accept); border-color:var(--accept);}
-  .verdict-stamp.rejected{color:var(--reject); border-color:var(--reject); transform:rotate(-5deg);}
+.presets{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-top:12px}
+.presets span.plabel{font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--faint);margin-right:2px}
+.presets button{font-family:'JetBrains Mono',monospace;font-size:11.5px;color:var(--soft);
+  background:var(--well);border:1px solid var(--rule);border-radius:2px;padding:6px 10px;
+  cursor:pointer;transition:all .15s;min-height:32px}
+.presets button:hover,.presets button:focus-visible{border-color:var(--purple);color:var(--purple);outline:none}
 
-  /* triggers */
-  .trigger-row{display:flex; gap:10px; align-items:flex-start; padding:8px 0; border-bottom:1px solid var(--paper-line);}
-  .trigger-row:last-child{border-bottom:none;}
-  .trigger-dot{width:9px; height:9px; border-radius:50%; margin-top:5px; flex-shrink:0;}
-  .trigger-dot.ok{background:var(--accept);}
-  .trigger-dot.fired{background:var(--amber);}
-  .trigger-body b{font-family:'IBM Plex Mono',monospace; font-size:11.5px; letter-spacing:.03em;}
-  .trigger-body p{margin:2px 0 0 0;}
-  .discriminating{
-    margin-top:6px; padding:8px 10px; background:var(--paper-dim);
-    font-size:12px; border-left:2px solid var(--amber);
-  }
+.verdictBox{margin-top:18px;background:var(--panel2);border:1px solid var(--rule);
+  border-radius:4px;padding:18px 20px}
+.familyTag{display:inline-block;font-family:'JetBrains Mono',monospace;font-size:11px;
+  letter-spacing:.13em;text-transform:uppercase;padding:5px 11px;border-radius:2px;
+  border:1px solid var(--purple);color:var(--purple);background:rgba(194,115,255,.1)}
+.familyTag.none{border-color:var(--faint);color:var(--faint);background:transparent}
+.familyTag.structural{border-color:var(--amber);color:var(--amber);background:rgba(255,183,77,.1)}
+.leverList{margin-top:14px;display:flex;flex-direction:column;gap:8px}
+.lever{display:grid;grid-template-columns:46px 1fr auto;gap:12px;align-items:center;
+  padding:12px 14px;background:var(--well);border:1px solid var(--rule);border-radius:3px}
+.leverList.changed .lever{animation:pop .22s ease}
+@keyframes pop{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}
+@media(prefers-reduced-motion:reduce){.leverList.changed .lever{animation:none}}
+.lever .lid{font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:700;color:var(--purple)}
+.lever .lbl{font-size:13.5px;line-height:1.32}
+.lever .lc{font-family:'JetBrains Mono',monospace;font-size:12.5px;color:var(--soft);white-space:nowrap}
+.lever.locked{opacity:.5;border-style:dashed}
+.lever.locked .lid{color:var(--faint)}
+.withheld{display:inline-block;font-family:'JetBrains Mono',monospace;font-size:10px;
+  letter-spacing:.1em;text-transform:uppercase;color:var(--amber);border:1px solid var(--amber);
+  border-radius:2px;padding:2px 6px;margin-left:7px;vertical-align:1px;white-space:nowrap}
+.econ{display:flex;flex-wrap:wrap;gap:14px 22px;margin-top:16px;padding-top:14px;border-top:1px solid var(--rule)}
+.econ div b{display:block;font-family:'JetBrains Mono',monospace;font-size:17px}
+.econ div i{font-style:normal;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--faint)}
+.pos{color:var(--green)} .neg{color:var(--red)} .amb{color:var(--amber)}
 
-  /* redaction */
-  .redact-bar{
-    background:#0F1113; color:var(--paper);
-    font-family:'Special Elite',monospace; font-size:12px;
-    padding:8px 12px; margin-top:10px; border-radius:2px;
-    display:flex; align-items:center; gap:8px;
-  }
-  .redact-bar::before{content:"■■■■"; letter-spacing:2px; opacity:.6;}
+.runnerUp{margin-top:14px;padding-top:13px;border-top:1px solid var(--rule);
+  font-size:12.5px;color:var(--soft)}
+.runnerUp .ruTitle{font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--faint);margin-bottom:5px}
+.runnerUp b{color:var(--ink);font-weight:500}
+.runnerUp.hidden{display:none}
 
-  .persona-toggle{display:flex; gap:8px; margin-bottom:16px;}
-  .persona-btn{
-    all:unset; cursor:pointer;
-    padding:8px 16px; font-size:12.5px;
-    border:1px solid var(--ink-line); color:var(--text-ink-dim);
-    border-radius:2px;
-  }
-  .persona-btn.active{background:var(--ink); color:var(--text-ink); border-color:var(--ink);}
-  .narrative-text{white-space:pre-wrap; font-size:14px; line-height:1.65;}
-  .grounding-badge{
-    display:inline-flex; align-items:center; gap:6px;
-    font-size:11px; padding:3px 9px; border-radius:10px;
-    background:rgba(63,107,74,.15); color:var(--accept); margin-top:10px;
-  }
+.chips{display:flex;flex-wrap:wrap;gap:7px;margin-top:14px}
+.chip{font-family:'JetBrains Mono',monospace;font-size:11px;padding:6px 10px;border-radius:2px;
+  border:1px solid var(--rule);color:var(--faint);background:var(--well)}
+.chip.on{border-color:var(--green);color:var(--green);background:rgba(61,219,160,.11)}
+.chip.blocked{border-color:var(--red);color:var(--red);background:rgba(255,112,128,.1)}
+.chip.warn{border-color:var(--amber);color:var(--amber);background:rgba(255,183,77,.1)}
 
-  /* slider */
-  .slider-wrap{margin:18px 0 8px 0;}
-  input[type=range]{width:100%; accent-color:#8A6A2E;}
-  .slider-ticks{display:flex; justify-content:space-between; font-size:10px; color:var(--text-paper-dim); font-family:'IBM Plex Mono',monospace;}
-  .bundle-out{margin-top:14px; padding:16px; background:var(--paper-dim); border-radius:2px;}
-  .bundle-out .fam{font-size:10.5px; text-transform:uppercase; letter-spacing:.05em; color:var(--text-paper-dim);}
-  .bundle-out .figs{display:flex; gap:26px; margin-top:8px; flex-wrap:wrap;}
-  .bundle-out .fig-num{font-family:'IBM Plex Mono',monospace; font-size:20px; font-weight:600;}
-  .bundle-out .fig-label{font-size:10.5px; color:var(--text-paper-dim); text-transform:uppercase;}
-  .lever-list{margin-top:8px; font-size:13px;}
+.callout{margin-top:14px;border-left:3px solid var(--amber);background:rgba(255,183,77,.07);
+  padding:13px 16px;font-size:13.5px;color:var(--soft);border-radius:0 3px 3px 0;line-height:1.5}
+.callout b{color:var(--amber)}
+.callout .mono{color:var(--ink)}
 
-  .stat-tile{background:var(--paper-dim); border-radius:2px; padding:12px 14px;}
-  .stat-tile .num{font-family:'IBM Plex Mono',monospace; font-size:22px; font-weight:600;}
-  .stat-tile .lbl{font-size:11px; color:var(--text-paper-dim); text-transform:uppercase; letter-spacing:.03em;}
+/* ---------- rejections ---------- */
+.rej{background:var(--panel);border:1px solid var(--rule);
+  border-left:3px solid var(--red);border-radius:0 4px 4px 0;padding:16px 18px}
+.rej.acc{border-left-color:var(--green)}
+.stamp{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.13em;
+  text-transform:uppercase;color:var(--red)}
+.rej.acc .stamp{color:var(--green)}
+.rej p{font-size:13px;color:var(--soft);margin-top:7px}
+.rej .test{margin-top:11px;font-family:'JetBrains Mono',monospace;font-size:11.5px;line-height:1.6;
+  color:var(--ink);background:var(--well);border:1px solid var(--rule);padding:9px 11px;border-radius:2px}
+.rej .test em{font-style:normal;color:var(--red)}
+.rej.acc .test em{color:var(--green)}
 
-  .loading, .error{padding:60px; text-align:center; color:var(--text-ink-dim);}
-  .error code{background:var(--ink-soft); padding:2px 6px; border-radius:2px;}
+/* ---------- persona ---------- */
+.toggle{display:inline-flex;border:1px solid var(--rule);border-radius:3px;overflow:hidden}
+.toggle button{background:transparent;border:none;color:var(--soft);cursor:pointer;
+  font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:.04em;
+  padding:10px 16px;transition:all .15s;min-height:40px}
+.toggle button.active{background:var(--purpleDeep);color:#fff}
+.toggle button:focus-visible{outline:2px solid var(--purple);outline-offset:-2px}
 
-  @media(max-width:760px){
-    #app{grid-template-columns:1fr; grid-template-areas:"header" "nav" "main";}
-    nav{flex-direction:row; overflow-x:auto; border-right:none; border-bottom:1px solid var(--ink-line); padding:8px 10px;}
-    nav button{padding:8px 12px; border-left:none; border-bottom:2px solid transparent; flex-shrink:0;}
-    nav button.active{border-left:none; border-bottom-color:var(--amber);}
-    main{padding:20px;}
-    .grid3{grid-template-columns:1fr 1fr;}
-  }
-  @media (prefers-reduced-motion: reduce){ .panel{animation:none;} }
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{text-align:left;font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--faint);padding:8px 10px;border-bottom:1px solid var(--rule);font-weight:400}
+td{padding:8px 10px;border-bottom:1px solid #262238;color:var(--soft)}
+td.n{font-family:'JetBrains Mono',monospace;color:var(--ink);white-space:nowrap}
+tr:last-child td{border-bottom:none}
+
+.bar{height:8px;background:#262238;border-radius:4px;overflow:hidden;margin-top:6px;display:flex}
+.bar i{display:block;height:100%;background:var(--purpleDeep)}
+.bar i.amber{background:var(--amber)}
+.barKey{display:flex;flex-wrap:wrap;gap:8px 18px;margin-top:9px;font-family:'JetBrains Mono',monospace;font-size:11.5px}
+.barKey span::before{content:"";display:inline-block;width:9px;height:9px;border-radius:2px;margin-right:6px}
+.barKey .k1{color:var(--soft)} .barKey .k1::before{background:var(--purpleDeep)}
+.barKey .k2{color:var(--amber)} .barKey .k2::before{background:var(--amber)}
+
+footer{margin-top:44px;padding-top:18px;border-top:1px solid var(--rule);
+  font-size:12.5px;color:var(--faint);line-height:1.6}
+footer .mono{color:var(--soft)}
+
+/* ---------- anomaly scan: 2,016 tests -> one surviving claim ---------- */
+.scanLead{font-size:13.5px;color:var(--soft);margin-top:9px;max-width:90ch}
+.scanLead b{color:var(--purple)}
+svg.lattice{width:100%;height:auto;display:block;margin-top:16px}
+.lattice .cd{fill:#2A2640}
+.lattice .ch{fill:var(--purple)}
+.latticeKey{display:flex;flex-wrap:wrap;gap:7px 18px;margin-top:10px;align-items:center;
+  font-family:'JetBrains Mono',monospace;font-size:11.5px}
+.latticeKey span::before{content:"";display:inline-block;width:9px;height:9px;
+  border-radius:2px;margin-right:6px;vertical-align:-1px}
+.latticeKey .k-hot{color:var(--purple)} .latticeKey .k-hot::before{background:var(--purple)}
+.latticeKey .k-dim{color:var(--faint)} .latticeKey .k-dim::before{background:#2A2640}
+.latticeKey .k-note{color:var(--faint);font-size:10.5px}
+.latticeKey .k-note::before{display:none}
+
+.funnel{display:grid;grid-template-columns:repeat(auto-fit,minmax(142px,1fr));
+  gap:8px;margin-top:18px}
+.fstage{background:var(--well);border:1px solid var(--rule);border-radius:3px;padding:12px 13px}
+.fstage.acc{border-color:var(--green)}
+.fstage b{display:block;font-family:'JetBrains Mono',monospace;font-size:23px;
+  color:var(--ink);line-height:1.1}
+.fstage.acc b{color:var(--green)}
+.fstage i{display:block;font-style:normal;font-size:11px;letter-spacing:.08em;
+  text-transform:uppercase;color:var(--purple);margin-top:4px}
+.fstage.acc i{color:var(--green)}
+.fstage em{display:block;font-style:normal;font-size:11.5px;color:var(--faint);
+  margin-top:5px;line-height:1.35}
+.scanNote{font-size:13px;color:var(--soft);margin-top:14px}
+.scanNote b{color:var(--amber)}
+
+.mstamp{font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:.13em;
+  text-transform:uppercase;color:var(--red)}
+.mstamp.acc{color:var(--green)}
+svg.mini{width:100%;height:auto;display:block;margin-top:12px;overflow:visible}
+.mini text{font-family:'JetBrains Mono',monospace;fill:var(--soft);font-size:11px}
+.mini text.dim{fill:var(--faint);font-size:10px}
+.mini text.hi{fill:var(--ink);font-size:12px;font-weight:700}
+.mini .ax{stroke:var(--rule);stroke-width:1;vector-effect:non-scaling-stroke}
+.mini .zero{stroke:var(--faint);stroke-width:1;stroke-dasharray:3 3;vector-effect:non-scaling-stroke}
+.mini .ci{fill:rgba(61,219,160,.22);stroke:var(--green);stroke-width:1.5;vector-effect:non-scaling-stroke}
+.mini .pt{fill:var(--green)}
+.mini .barEffect{fill:var(--red);opacity:.8}
+.mini .barCause{fill:var(--purple);opacity:.8}
+.mini .vline{stroke:var(--faint);stroke-width:1;stroke-dasharray:2 3;vector-effect:non-scaling-stroke}
+.miniNote{font-size:12.5px;color:var(--soft);margin-top:11px;line-height:1.45}
+.miniNote b{color:var(--ink)}
+.doseRow{margin-top:12px}
+.doseRow .dlab{display:flex;justify-content:space-between;font-family:'JetBrains Mono',monospace;
+  font-size:11.5px;color:var(--soft);margin-bottom:5px}
+.doseRow .dlab b{color:var(--ink)}
+.bar i.red{background:var(--red)}
+
+/* ---------- constraint dependency graph ---------- */
+svg.dag{width:100%;height:auto;display:block;margin-top:14px;overflow:visible}
+.nodeG .node{fill:var(--well);stroke:var(--rule);stroke-width:1.5;vector-effect:non-scaling-stroke}
+.nodeG.on .node{fill:rgba(61,219,160,.14);stroke:var(--green)}
+.nodeG.gated .node{fill:rgba(255,112,128,.12);stroke:var(--red)}
+.nodeG .nid{font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:700;fill:var(--faint)}
+.nodeG.on .nid{fill:var(--green)} .nodeG.gated .nid{fill:var(--red)}
+.nodeG .nlab{font-family:'Space Grotesk',sans-serif;font-size:10.5px;fill:var(--soft)}
+.nodeG .nval{font-family:'JetBrains Mono',monospace;font-size:10.5px;fill:var(--faint)}
+.dag .edge{fill:none;stroke:var(--rule);stroke-width:1.5;stroke-dasharray:4 3;
+  vector-effect:non-scaling-stroke}
+.dag .edge.open{stroke:var(--green);stroke-dasharray:none}
+.dag .elab{font-family:'JetBrains Mono',monospace;font-size:9px;fill:var(--faint)}
+
+/* ---------- lever ledger ---------- */
+.ledger td.z{color:var(--faint)}
+.ledger td.hot{color:var(--green)}
+.ledger tr.inb td{background:rgba(194,115,255,.07)}
+.ledger td{white-space:nowrap}
+.fbtn{font-family:'JetBrains Mono',monospace;font-size:10.5px;color:var(--soft);
+  background:var(--well);border:1px solid var(--rule);border-radius:2px;padding:4px 8px;
+  cursor:pointer;white-space:nowrap;min-height:28px}
+.fbtn:hover,.fbtn:focus-visible{border-color:var(--purple);color:var(--purple);outline:none}
+.fbtn.on{border-color:var(--amber);color:var(--amber);background:rgba(255,183,77,.1)}
+.forceBar{margin-top:13px;padding-top:12px;border-top:1px solid var(--rule);
+  font-family:'JetBrains Mono',monospace;font-size:11.5px;color:var(--soft);
+  display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center}
+.forceBar b{color:var(--amber)}
+.forceBar .zeroDelta{color:var(--green);font-weight:700}
+
+/* ---------- optimiser vs naive ---------- */
+.cmp td.win{color:var(--green)} .cmp td.lose{color:var(--red)} .cmp td.warn{color:var(--amber)}
+.cmp tr.opt td{color:var(--ink)}
+.cmp tr.opt td:first-child{color:var(--green);font-weight:700}
+
+/* ---------- grounded sentence ---------- */
+.grounded{margin-top:15px;padding:13px 15px;background:var(--well);border:1px solid var(--rule);
+  border-left:3px solid var(--green);border-radius:0 3px 3px 0}
+.grounded p{font-size:14px;color:var(--ink);line-height:1.5}
+.grounded .gn{font-family:'JetBrains Mono',monospace;color:var(--green);font-weight:700}
+.gbadge{display:inline-block;margin-top:10px;font-family:'JetBrains Mono',monospace;
+  font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--green);
+  border:1px solid var(--green);border-radius:2px;padding:3px 8px}
+
+/* ---------- case chronology ---------- */
+.tl{margin-top:14px;position:relative;padding-left:24px}
+.tl::before{content:"";position:absolute;left:5px;top:10px;bottom:10px;width:1px;background:var(--rule)}
+.tlItem{position:relative;padding:9px 0}
+.tlItem::before{content:"";position:absolute;left:-23px;top:13px;width:11px;height:11px;
+  border-radius:50%;background:var(--faint);border:2px solid var(--panel)}
+.tlItem.cause::before{background:var(--green)}
+.tlItem.effect::before{background:var(--red)}
+.tlItem.bad::before{background:var(--amber)}
+.tlDate{font-family:'JetBrains Mono',monospace;font-size:11.5px;color:var(--purple);letter-spacing:.06em}
+.tlWhat{font-size:13.5px;color:var(--ink);margin-top:2px}
+.tlNote{font-size:12.5px;color:var(--faint);margin-top:3px;line-height:1.4}
+.tlItem.bad .tlNote{color:var(--amber)}
+.tlItem.cause .tlNote{color:var(--green)}
+
+/* ---------- shapley drill-down ---------- */
+.drill{margin-top:12px}
+.drillRow{display:grid;grid-template-columns:1fr auto;gap:6px 12px;align-items:center;padding:6px 0}
+.drillRow .dname{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--soft)}
+.drillRow .dpct{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--ink);white-space:nowrap}
+.drillRow .bar{grid-column:1/-1;margin-top:2px}
+.drillEnd{margin-top:12px;padding:12px 14px;background:var(--well);border:1px solid var(--green);
+  border-radius:3px;font-size:13px;color:var(--soft);line-height:1.45}
+.drillEnd b{color:var(--green)}
+
+/* ---------- revenue bridge waterfall ---------- */
+svg.wf{width:100%;height:auto;display:block;margin-top:12px;overflow:visible}
+.wf text{font-family:'JetBrains Mono',monospace;font-size:10.5px;fill:var(--soft)}
+.wf text.rl{fill:var(--faint);font-size:10px}
+.wf text.inbar{fill:#0B0A0F;font-weight:700}
+.wf .bneg{fill:var(--red)} .wf .bpos{fill:var(--green)} .wf .bnet{fill:var(--purple)}
+.wf .zeroline{stroke:var(--faint);stroke-width:1;vector-effect:non-scaling-stroke}
+.wf .sep{stroke:var(--rule);stroke-width:1;vector-effect:non-scaling-stroke}
+
+@media(max-width:820px){
+  body{padding:16px 13px 60px}
+  .grid2,.grid3{grid-template-columns:1fr}
+  .hero{padding:16px 14px 18px}
+  header{padding:15px 15px;margin-bottom:0}
+  .thesis{padding:14px 15px;margin:16px 0 0}
+  .panel{padding:17px 15px}
+  .lever{grid-template-columns:38px 1fr;gap:4px 10px}
+  .lever .lc{grid-column:2/-1;text-align:left;color:var(--faint)}
+  .shapeNote{max-width:none;font-size:12.5px}
+  .ticks span:nth-child(2),.ticks span:nth-child(4){display:none}
+
+  /* The slider is the hero and must clear the fold on a phone. Compact the
+     verdict header and drop the thesis below the hero — the six key stats and
+     the thesis both stay in the served HTML, they just re-stack. */
+  .wrap{display:flex;flex-direction:column}
+  .wrap>*{order:6}
+  .wrap>header{order:1}
+  .wrap>h2.decisionH{order:2}
+  .wrap>.hero{order:3}
+  .wrap>.vrow{order:4}
+  .wrap>.thesis{order:5}
+
+  h1{font-size:20.5px;line-height:1.18}
+  h2{margin:22px 0 10px}
+  h2.decisionH{margin:16px 0 8px}
+  .kick{font-size:10px;letter-spacing:.14em;margin-bottom:7px}
+  .vsub{font-size:13px;margin-top:8px;line-height:1.42}
+  .vrow{display:grid;grid-template-columns:repeat(3,1fr);gap:11px 10px;
+        padding:14px 15px;margin:16px 0 0;border-radius:4px;border-top:1px solid var(--rule)}
+  header{border-radius:4px}
+  .vstat b{font-size:15px}
+  .vstat i{font-size:9.5px;letter-spacing:.04em;line-height:1.25;display:block}
+  .capLabel{font-size:10px}
+  .budgetVal{font-size:26px}
+  .curveWrap{margin-top:10px}
+  .presets{margin-top:10px}
+  .verdictBox{margin-top:14px;padding:15px 14px}
+}
+/* Short phones (iPhone SE class, and any phone once browser chrome eats the
+   viewport): compact further so the slider still clears the fold. Larger
+   phones keep the roomier type. */
+@media(max-width:820px) and (max-height:700px){
+  body{padding:12px 13px 60px}
+  h1{font-size:19px}
+  .vsub{font-size:12.5px;line-height:1.4;margin-top:7px}
+  .kick{margin-bottom:5px}
+  header{padding:13px 14px}
+  h2.decisionH{margin:12px 0 6px}
+  .budgetVal{font-size:24px}
+  .hero{padding:14px 13px 16px}
+}
 </style>
 </head>
-<body>
-<div id="app">
-  <header>
-    <div>
-      <div class="case-id mono" id="case-id">CASE FILE — LOADING…</div>
-      <h1 id="case-title">Fulcrum</h1>
-      <div class="kpi-line" id="case-kpi-line"></div>
-    </div>
-    <div class="overall-stamp stamp" id="overall-stamp">…</div>
-  </header>
-  <nav id="nav"></nav>
-  <main id="main">
-    <div class="loading">Loading case file…</div>
-  </main>
+<body><div class="wrap">
+<script>document.documentElement.className="js";</script>
+
+<!-- ================= STATIC VERDICT — visible with JavaScript disabled ================= -->
+<header>
+  <div class="kick">Fulcrum · Case file · week ending 9 Aug 2026 · run 39.5 s</div>
+  <h1>North / Large Appliances / Marketplace is losing <span>₹42.6 L per week</span></h1>
+  <p class="vsub">Revenue is <b>−1.80% vs forecast</b>. Demand held; fulfilment broke. A logistics vendor
+  switch on 27 July drove delivery SLA down and cancellations from <b>8.8% to 21.4%</b>. One explanation
+  survived falsification; two were rejected, on two different grounds. <b>₹25.1 L per week</b> — 37% of
+  the movement — remains unexplained and is reported as such.</p>
+</header>
+<div class="vrow">
+  <div class="vstat"><b>2,016</b><i>tests run</i></div>
+  <div class="vstat"><b>115</b><i>material</i></div>
+  <div class="vstat"><b>89.8%</b><i>coverage vs 90% target</i></div>
+  <div class="vstat"><b>1 of 3</b><i>causes accepted</i></div>
+  <div class="vstat"><b>0.63</b><i>confidence</i></div>
+  <div class="vstat"><b>1 of 27</b><i>steps generative</i></div>
 </div>
 
+<div class="thesis">
+  <p><b>Actions have no intrinsic value.</b> An action is a priced way of relieving a set of constraints.
+  Value belongs to the resulting constraint state — which is why two levers covering the same constraint
+  contribute a union, not a sum.
+  <span class="punch">The last mile of BI isn't explanation. It's allocation.</span></p>
+</div>
+
+<!-- ================= HERO: THE BUDGET SLIDER ================= -->
+<h2 class="decisionH">The decision · drag the capital envelope</h2>
+<div class="hero">
+  <div class="sliderTop">
+    <div>
+      <div class="capLabel mono">Capital envelope</div>
+      <div class="budgetVal" id="budgetVal">₹70.0 L</div>
+    </div>
+    <div class="shapeNote">The recommendation doesn't just get bigger with budget — it changes
+      <b>shape</b>. Repair, goal-modifying and structural are different kinds of answer, not
+      different sizes of one.</div>
+  </div>
+
+  <div class="jsOnly">
+    <input type="range" id="budget" min="0" max="12000000" step="50000" value="7000000"
+           aria-label="Capital envelope in rupees" aria-valuetext="₹70.0 L">
+    <div class="ticks" aria-hidden="true">
+      <span>₹0</span><span>₹30 L</span><span>₹60 L</span><span>₹90 L</span><span>₹1.2 Cr</span>
+    </div>
+  </div>
+  <p class="noJsOnly" style="margin-top:10px;font-size:13px;color:var(--faint)">
+    JavaScript is off, so the envelope control is hidden rather than shown inert.
+    The verdict below is the engine's answer at <span class="mono">₹70.0 L</span>.</p>
+
+  <div class="curveWrap">
+    <div class="curveCap mono">Recovered value per week vs envelope · ₹0 → ₹1.2 Cr</div>
+    <svg class="curve" viewBox="0 0 1000 160" role="img"
+         aria-label="Recovered weekly value as a step function of the capital envelope: flat at zero until ₹12 L, then stepping up at ₹12 L, ₹40 L, ₹44 L, ₹55 L and ₹67 L, then flat at ₹35.5 L per week.">
+      <path class="curveArea" id="curveArea" d="M0,130 H100 V122.96 H333.33 V76.48 H366.67 V59.58 H458.33 V37.04 H558.33 V30 H1000 V130 H0 Z"/>
+      <path class="curveLine" id="curveLine" d="M0,130 H100 V122.96 H333.33 V76.48 H366.67 V59.58 H458.33 V37.04 H558.33 V30 H1000"/>
+      <g class="curveMark" id="curveMark" transform="translate(583.33,0)">
+        <line y1="20" y2="140"/><circle cy="30" r="5.5" id="curveDot"/>
+      </g>
+    </svg>
+  </div>
+
+  <div class="presets jsOnly">
+    <span class="plabel">jump to</span>
+    <button type="button" data-b="500000">₹5 L</button>
+    <button type="button" data-b="1500000">₹15 L</button>
+    <button type="button" data-b="4500000">₹45 L</button>
+    <button type="button" data-b="5600000">₹56 L</button>
+    <button type="button" data-b="7000000">₹70 L</button>
+    <button type="button" data-b="10000000">₹1 Cr</button>
+  </div>
+
+  <div class="verdictBox" id="verdictBox" aria-live="polite">
+    <span class="familyTag structural" id="familyTag">repair + structural</span>
+
+    <div class="leverList" id="leverList">
+      <div class="lever">
+        <div class="lid">L4</div>
+        <div class="lbl">Targeted price rollback on Large Appliances</div>
+        <div class="lc">₹12.0 L</div>
+      </div>
+      <div class="lever">
+        <div class="lid">L5</div>
+        <div class="lbl">Exit marketplace in North; route to own-site fulfilment</div>
+        <div class="lc">₹55.0 L</div>
+      </div>
+    </div>
+
+    <div class="chips" id="chips">
+      <span class="chip on">C1 · Delivery capacity</span>
+      <span class="chip on">C2 · Listing accuracy</span>
+      <span class="chip on">C3 · Customer retention</span>
+      <span class="chip on">C4 · Price position</span>
+    </div>
+
+    <div class="econ">
+      <div><b id="ecCost">₹67.0 L</b><i>committed</i></div>
+      <div><b id="ecValue" class="pos">₹35.5 L</b><i>recovered / week</i></div>
+      <div><b id="ecPayback">1.9 wk</b><i>payback</i></div>
+      <div><b id="ecSlack">₹3.0 L</b><i>envelope unused</i></div>
+      <div><b id="ecCons">4 of 4</b><i>constraints relieved</i></div>
+    </div>
+
+    <div class="grounded">
+      <p id="groundedText">At <span class="gn">₹70.0 L</span> the engine commits
+      <span class="gn">₹67.0 L</span> to L4 + L5, relieving <span class="gn">4 of 4</span>
+      constraints and recovering <span class="gn">₹35.5 L</span> per week — payback in
+      <span class="gn">1.9 weeks</span>, with <span class="gn">₹3.0 L</span> left unspent.</p>
+      <span class="gbadge" id="groundedBadge">6 figures · every one computed, none written</span>
+    </div>
+
+    <div class="runnerUp" id="runnerUp">
+      <div class="ruTitle">Runner-up bundle, and why it lost</div>
+      <span id="runnerUpBody"><b>L5</b> alone — ₹33.0 L per week for ₹55.0 L. It loses by ₹2.5 L per
+      week: it leaves <b>C4 · Price position</b> binding.</span>
+    </div>
+
+    <div class="callout" id="callout"><b>This is the whole argument.</b> Repairing every diagnosed cause
+      separately (L1 + L2 + L3) costs <span class="mono">₹95.0 L</span> — over this envelope. One
+      structural move buys the identical constraint state for <span class="mono">₹55.0 L</span>, because
+      value belongs to the constraint state, not to the actions.</div>
+  </div>
+</div>
+
+<!-- ================= WHY THIS BUNDLE ================= -->
+<h2>Why this bundle, and not another</h2>
+<div class="grid2">
+  <div class="panel">
+    <h3>The dependency that prices everything</h3>
+    <p style="font-size:13.5px;color:var(--soft);margin-top:8px">C2 and C3 pay out only once C1 is
+    relieved. That single edge is why a ₹4.0 L lever can be worth ₹0 and why one structural move can
+    be worth more than three repairs.</p>
+    <svg class="dag" viewBox="0 0 340 130" role="img"
+         aria-label="Constraint dependency graph: C1 delivery capacity gates both C2 listing accuracy and C3 customer retention. C4 price position is independent.">
+      <g class="eg" id="dagEdge2"><path class="edge open" id="dagEdge2p" d="M128,47 C160,47 168,25 200,25"/>
+        <polygon id="dagEdge2h" points="195,20 204,25 195,30"/></g>
+      <g class="eg" id="dagEdge3"><path class="edge open" id="dagEdge3p" d="M128,47 C160,47 168,73 200,73"/>
+        <polygon id="dagEdge3h" points="195,68 204,73 195,78"/></g>
+      <g class="nodeG on" id="dagC1"><rect class="node" x="10" y="28" width="118" height="38" rx="4"/>
+        <text class="nid" x="20" y="45">C1</text><text class="nval" x="46" y="45">₹19.0 L</text>
+        <text class="nlab" x="20" y="59">Delivery capacity</text></g>
+      <g class="nodeG on" id="dagC2"><rect class="node" x="200" y="6" width="130" height="38" rx="4"/>
+        <text class="nid" x="210" y="23">C2</text><text class="nval" x="236" y="23">₹6.0 L</text>
+        <text class="nlab" x="210" y="37">Listing accuracy</text></g>
+      <g class="nodeG on" id="dagC3"><rect class="node" x="200" y="54" width="130" height="38" rx="4"/>
+        <text class="nid" x="210" y="71">C3</text><text class="nval" x="236" y="71">₹8.0 L</text>
+        <text class="nlab" x="210" y="85">Customer retention</text></g>
+      <g class="nodeG on" id="dagC4"><rect class="node" x="10" y="84" width="118" height="38" rx="4"/>
+        <text class="nid" x="20" y="101">C4</text><text class="nval" x="46" y="101">₹2.5 L</text>
+        <text class="nlab" x="20" y="115">Price position</text></g>
+    </svg>
+    <p class="miniNote">Green means relieved and paying out. Red means relieved but
+    <b>gated</b> — bought, and still worth nothing. Drag the slider to open the edges; force a
+    gated lever in from the ledger below to turn a node red on purpose.</p>
+  </div>
+
+  <div class="panel">
+    <h3>What the obvious rules would have bought</h3>
+    <p style="font-size:13.5px;color:var(--soft);margin-top:8px">Same envelope, same catalogue, three
+    heuristics a competent analyst might actually use.</p>
+    <div class="tableWrap" style="margin-top:12px">
+      <table class="cmp">
+        <tr><th>Allocation rule</th><th>Bundle</th><th>Value/wk</th><th>Cost</th><th>vs Fulcrum</th></tr>
+        <tbody id="cmpBody">
+          <tr class="opt"><td>Fulcrum optimiser</td><td class="n">L4+L5</td><td class="n">₹35.5 L</td><td class="n">₹67.0 L</td><td class="n">—</td></tr>
+          <tr><td>Cheapest first</td><td class="n">L7+L4+L2</td><td class="n">₹2.5 L</td><td class="n">₹41.0 L</td><td class="n lose">−₹33.0 L per week</td></tr>
+          <tr><td>Best value/₹ first</td><td class="n">L5+L4</td><td class="n">₹35.5 L</td><td class="n">₹67.0 L</td><td class="n win">matches here</td></tr>
+          <tr><td>Repair every cause</td><td class="n">L1+L2+L3</td><td class="n">₹33.0 L</td><td class="n">₹95.0 L</td><td class="n warn">over envelope</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="miniNote" id="cmpNote">Cheapest-first buys three levers, two of which are gated, and
+    returns <b>₹2.5 L per week</b>. It is not a worse version of the right answer — it is a different
+    answer, produced by ranking actions instead of constraint states.</p>
+  </div>
+</div>
+
+<div class="panel" style="margin-top:14px">
+  <h3>The lever ledger — what each action is worth, alone and in context</h3>
+  <p style="font-size:13.5px;color:var(--soft);margin-top:8px">
+    <b style="color:var(--ink)">Alone</b> is what the lever buys on an empty board.
+    <b style="color:var(--ink)">Marginal</b> is what it adds to the bundle actually chosen at this
+    envelope. Three levers are worth ₹0 alone; at ₹70 L, five are worth ₹0 on the margin. Force one
+    in and watch the cost move while the value does not.</p>
+  <div class="tableWrap" style="margin-top:12px">
+    <table class="ledger">
+      <tr><th>Lever</th><th>Cost</th><th>Alone</th><th>Marginal</th><th>Status</th></tr>
+      <tbody id="ledgerBody">
+        <tr><td class="n">L1</td><td class="n">₹40.0 L</td><td class="n">₹19.0 L</td><td class="n z">₹0.0 L</td><td><button type="button" class="fbtn" data-force="L1">+ force buy</button></td></tr>
+        <tr><td class="n">L2</td><td class="n">₹25.0 L</td><td class="n z">₹0.0 L</td><td class="n z">₹0.0 L</td><td><button type="button" class="fbtn" data-force="L2">+ force buy</button></td></tr>
+        <tr><td class="n">L3</td><td class="n">₹30.0 L</td><td class="n z">₹0.0 L</td><td class="n z">₹0.0 L</td><td><button type="button" class="fbtn" data-force="L3">+ force buy</button></td></tr>
+        <tr class="inb"><td class="n">L4</td><td class="n">₹12.0 L</td><td class="n">₹2.5 L</td><td class="n hot">₹2.5 L</td><td class="n">in bundle</td></tr>
+        <tr class="inb"><td class="n">L5</td><td class="n">₹55.0 L</td><td class="n">₹33.0 L</td><td class="n hot">₹33.0 L</td><td class="n">in bundle</td></tr>
+        <tr><td class="n">L6</td><td class="n">₹85.0 L</td><td class="n">₹27.0 L</td><td class="n z">₹0.0 L</td><td><button type="button" class="fbtn" data-force="L6">+ force buy</button></td></tr>
+        <tr><td class="n">L7</td><td class="n">₹4.0 L</td><td class="n z">₹0.0 L</td><td class="n z">₹0.0 L</td><td><button type="button" class="fbtn" data-force="L7">+ force buy</button></td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="forceBar" id="forceBar">
+    <span>forced additions: <b>none</b></span>
+    <span>committed ₹67.0 L · recovered ₹35.5 L per week</span>
+  </div>
+</div>
+
+<!-- ================= REJECTIONS ================= -->
+<h2>What the engine killed, and why</h2>
+<div class="grid3">
+  <div class="rej acc">
+    <div class="stamp">✓ Accepted · E1</div>
+    <h3 style="margin-top:6px">Logistics vendor switch</h3>
+    <p>27 Jul, North only. Survived precedence, difference-in-differences, synthetic control,
+    placebo inference and three refuters.</p>
+    <div class="test"><em>PASSED:</em> all falsification tests<br>+10.07 pp on cancellations<br>₹42.6 L/wk · CI [−48.8, −36.5]<br>placebo-in-space p = 0.167</div>
+  </div>
+  <div class="rej">
+    <div class="stamp">✕ Rejected · E2</div>
+    <h3 style="margin-top:6px">List price increase +3%</h3>
+    <p>Better correlated than the true cause — and dead anyway. A cause cannot post-date its own effect.</p>
+    <div class="test"><em>FAILED:</em> temporal precedence<br>effect began 2026-08-02<br>cause began 2026-08-03</div>
+  </div>
+  <div class="rej">
+    <div class="stamp">✕ Rejected · E3</div>
+    <h3 style="margin-top:6px">Competitor promotional sale</h3>
+    <p>Early enough to pass precedence, so a weaker engine would have accepted it. Killed on exposure.</p>
+    <div class="test"><em>FAILED:</em> dose–response inverted<br>highest exposure West (1.00)<br>effect concentrated North (0.60)</div>
+  </div>
+</div>
+<div class="callout" style="margin-top:14px">
+  <b>Two rejections, two different mechanisms.</b> Not one test applied twice — precedence and
+  dose–response are independent ways to be wrong. A support-topic spike for app crashes was discarded
+  earlier still, by the <b>ontology filter</b>, before any statistical test ran: the approved business
+  DAG declares no causal path from app stability to revenue.
+</div>
+
+<!-- ================= ANOMALY SCAN (static: no JavaScript required) ================= -->
+<h2>The scan underneath the verdict</h2>
+<div class="panel">
+  <h3>2,016 statistical tests. 115 came back material.</h3>
+  <p class="scanLead">The engine does not report what it finds — it reports what survives.
+  <b>5.7%</b> of the scan was material at all; three candidate causes were carried into
+  falsification, and exactly one came out the other side.</p>
+
+  <svg class="lattice" viewBox="0 0 864 336" role="img"
+       aria-label="A grid of 2,016 cells, one per statistical test. A highlighted band covering 115 cells shows the material share — about one twentieth of the grid.">
+    <defs>
+      <pattern id="cellDim" width="12" height="12" patternUnits="userSpaceOnUse">
+        <rect class="cd" x="2" y="2" width="8" height="8" rx="1.5"/>
+      </pattern>
+      <pattern id="cellHot" width="12" height="12" patternUnits="userSpaceOnUse">
+        <rect class="ch" x="2" y="2" width="8" height="8" rx="1.5"/>
+      </pattern>
+    </defs>
+    <rect width="864" height="336" fill="url(#cellDim)"/>
+    <rect width="864" height="12" fill="url(#cellHot)"/>
+    <rect y="12" width="516" height="12" fill="url(#cellHot)"/>
+  </svg>
+  <div class="latticeKey">
+    <span class="k-hot">115 material</span>
+    <span class="k-dim">1,901 not material</span>
+    <span class="k-note">each cell is one test · this is a count, not a map — cell positions carry no meaning</span>
+  </div>
+
+  <div class="funnel">
+    <div class="fstage"><b>2,016</b><i>tests run</i><em>the full scan</em></div>
+    <div class="fstage"><b>115</b><i>material</i><em>5.7% cleared the materiality bar</em></div>
+    <div class="fstage"><b>3</b><i>candidate causes</i><em>carried into falsification</em></div>
+    <div class="fstage acc"><b>1</b><i>accepted</i><em>2 rejected, on two different mechanisms</em></div>
+  </div>
+
+  <p class="scanNote">Upstream of every one of those tests, the <b>ontology filter</b> removed an
+  app-crash support topic before it was ever scored — the approved business DAG declares no causal
+  path from app stability to revenue, so no statistic was ever computed to argue about.</p>
+</div>
+
+<div class="grid3" style="margin-top:14px">
+  <div class="panel">
+    <div class="mstamp acc">✓ E1 · effect size</div>
+    <h3 style="margin-top:6px">The interval excludes zero</h3>
+    <svg class="mini" viewBox="0 0 320 96" role="img"
+         aria-label="Effect size interval from minus 48.8 to minus 36.5 lakh per week, point estimate minus 42.6, with zero well outside the interval to the right.">
+      <line class="ax" x1="14" y1="47" x2="306" y2="47"/>
+      <line class="zero" x1="281.7" y1="31" x2="281.7" y2="63"/>
+      <rect class="ci" x="44.17" y="40" width="59.86" height="14" rx="3"/>
+      <circle class="pt" cx="74.35" cy="47" r="4.5"/>
+      <text class="hi" x="74.35" y="28" text-anchor="middle">−42.6</text>
+      <text class="dim" x="44.17" y="70" text-anchor="middle">−48.8</text>
+      <text class="dim" x="104.03" y="70" text-anchor="middle">−36.5</text>
+      <text class="dim" x="281.7" y="78" text-anchor="middle">0</text>
+    </svg>
+    <p class="miniNote">₹ lakh per week. The entire interval sits on the loss side —
+    <b>zero is not a plausible value</b>. Placebo-in-space returned p = 0.167.</p>
+  </div>
+
+  <div class="panel">
+    <div class="mstamp">✕ E2 · temporal precedence</div>
+    <h3 style="margin-top:6px">The cause starts a day late</h3>
+    <svg class="mini" viewBox="0 0 320 96" role="img"
+         aria-label="Timeline showing the effect beginning 2026-08-02 and the proposed cause beginning 2026-08-03, one day later.">
+      <text class="dim" x="6" y="27">effect</text>
+      <rect class="barEffect" x="92" y="31" width="208" height="12" rx="2"/>
+      <text class="dim" x="6" y="53">cause</text>
+      <rect class="barCause" x="160" y="57" width="140" height="12" rx="2"/>
+      <line class="vline" x1="92" y1="22" x2="92" y2="76"/>
+      <line class="vline" x1="160" y1="22" x2="160" y2="76"/>
+      <text class="dim" x="92" y="90" text-anchor="middle">2026-08-02</text>
+      <text class="dim" x="160" y="90" text-anchor="middle">2026-08-03</text>
+    </svg>
+    <p class="miniNote">It correlated better than the true cause. It still cannot be the cause:
+    <b>an effect cannot precede it</b>. No amount of fit repairs that.</p>
+  </div>
+
+  <div class="panel">
+    <div class="mstamp">✕ E3 · dose–response</div>
+    <h3 style="margin-top:6px">Most exposed ≠ most affected</h3>
+    <div class="doseRow">
+      <div class="dlab"><span>exposure · highest</span><b>West 1.00</b></div>
+      <div class="bar"><i class="red" style="width:100%"></i></div>
+    </div>
+    <div class="doseRow">
+      <div class="dlab"><span>effect · concentrated</span><b>North 0.60</b></div>
+      <div class="bar"><i style="width:60%"></i></div>
+    </div>
+    <p class="miniNote">A real dose–response puts the damage where the exposure is. Here the
+    <b>regions do not match</b> — so the competitor sale is not what moved North.</p>
+  </div>
+</div>
+
+<div class="panel" style="margin-top:14px">
+  <h3>One ruler, both verdicts</h3>
+  <p style="font-size:13.5px;color:var(--soft);margin-top:8px">Put the accepted cause and the
+  rejected one on the same axis and the precedence test stops being an argument. It becomes an
+  ordering you can read off.</p>
+  <div class="tl">
+    <div class="tlItem cause">
+      <div class="tlDate">27 Jul 2026</div>
+      <div class="tlWhat">Logistics vendor switch, North only — <b>E1, accepted</b></div>
+      <div class="tlNote">Six days ahead of the effect. Precedence satisfied.</div>
+    </div>
+    <div class="tlItem effect">
+      <div class="tlDate">2 Aug 2026</div>
+      <div class="tlWhat">Effect onset — cancellations climb 8.8% → 21.4%</div>
+      <div class="tlNote">This is the movement everything else has to explain.</div>
+    </div>
+    <div class="tlItem bad">
+      <div class="tlDate">3 Aug 2026</div>
+      <div class="tlWhat">List price +3% — <b>E2, rejected</b></div>
+      <div class="tlNote">One day too late. A cause cannot post-date its own effect, however well it correlates.</div>
+    </div>
+    <div class="tlItem">
+      <div class="tlDate">9 Aug 2026</div>
+      <div class="tlWhat">Week ends; case file compiled in 39.5 s</div>
+      <div class="tlNote">2,016 tests, 1 of 27 steps generative.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ================= ABSTENTION ================= -->
+<h2>What we could not explain</h2>
+<div class="grid2">
+  <div class="panel">
+    <h3>Confidence 0.63 — reported, not rounded up</h3>
+    <p style="font-size:13.5px;color:var(--soft);margin-top:9px">
+      An engine that always has an answer is an engine that cannot be trusted when it does.
+      ₹25.1 L per week is <b style="color:var(--amber)">not attributed to anything</b>.</p>
+    <div class="bar" style="margin-top:13px">
+      <i style="width:62.9%"></i><i class="amber" style="width:37.1%"></i>
+    </div>
+    <div class="barKey">
+      <span class="k1">₹42.6 L attributed · 62.9%</span>
+      <span class="k2">₹25.1 L unattributed · 37.1%</span>
+    </div>
+    <p style="font-size:13.5px;color:var(--soft);margin-top:12px">
+      An East / SmallAppliances demand shock has no event-log entry and no ticket signal. The engine
+      declines to stretch E1 to cover it — the honest output is a smaller claim, not a wider one.</p>
+    <div class="chips">
+      <span class="chip warn">unexplained residual</span>
+      <span class="chip warn">grain policy · NPS</span>
+      <span class="chip">sparse history · 336 slices</span>
+    </div>
+  </div>
+  <div class="panel">
+    <h3>Why NPS is excluded — policy, not staleness</h3>
+    <p style="font-size:13.5px;color:var(--soft);margin-top:9px">
+      NPS is monthly and publishes a month late. Any weekly attribution to it would be interpolation
+      presented as evidence. The contract forbids it, so the engine abstains rather than upsampling.
+      <b style="color:var(--ink)">Every other source is fresh</b> — this is a grain decision, not a
+      data-quality excuse.</p>
+    <div class="tableWrap" style="margin-top:12px">
+    <table>
+      <tr><th>Source</th><th>Grain</th><th>Status</th></tr>
+      <tr><td>order_system</td><td class="n">5 min</td><td class="n" style="color:var(--green)">fresh</td></tr>
+      <tr><td>logistics_api</td><td class="n">60 min</td><td class="n" style="color:var(--green)">fresh</td></tr>
+      <tr><td>warehouse</td><td class="n">daily</td><td class="n" style="color:var(--green)">fresh</td></tr>
+      <tr><td>nps_survey</td><td class="n">monthly</td><td class="n" style="color:var(--amber)">excluded · grain policy</td></tr>
+    </table>
+    </div>
+  </div>
+</div>
+
+<!-- ================= PERSONA ================= -->
+<h2>Same evidence, two audiences</h2>
+<div class="panel">
+  <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px">
+    <div class="toggle">
+      <button type="button" data-persona="ops">Ops Manager · North</button>
+      <button type="button" data-persona="cat" class="active">Category Head</button>
+    </div>
+    <div class="mono" style="font-size:12px;color:var(--faint)" id="personaScope">
+      row scope: ALL regions · authority: vp
+    </div>
+  </div>
+  <p style="font-size:13.5px;color:var(--soft);margin-top:14px" id="personaNote">Sees the full portfolio,
+    the runner-up bundle and why it lost, budget consumption against the envelope, and the unexplained
+    residual.</p>
+  <div class="chips" id="personaLevers" style="margin-top:12px">
+    <span class="chip on">L1 · visible</span>
+    <span class="chip on">L2 · visible</span>
+    <span class="chip on">L3 · visible</span>
+    <span class="chip on">L4 · visible</span>
+    <span class="chip on">L5 · visible</span>
+    <span class="chip on">L6 · visible</span>
+    <span class="chip on">L7 · visible</span>
+  </div>
+  <div class="callout" style="margin-top:14px">
+    Withheld levers stay on screen, greyed and labelled. <b>Withholding that announces itself</b> is more
+    convincing than absence — the Ops Manager can see that a decision exists above their authority without
+    seeing its contents. Row-level security is enforced in the <b>prose</b>, not only the query: the
+    narrative validator confirmed <span class="mono">0 ungrounded numerals</span> across 33 emitted, and
+    its negative test returned <span class="mono">blocked: true</span> against injected statistics
+    (&ldquo;47.3%&rdquo;, &ldquo;91.4%&rdquo;).
+  </div>
+</div>
+
+<!-- ================= EVIDENCE CHAIN ================= -->
+<h2>How the movement was localised</h2>
+<div class="grid2">
+  <div class="panel">
+    <h3>Shapley — localisation power by dimension</h3>
+    <p style="font-size:13.5px;color:var(--soft);margin-top:8px">How much each dimension contributes
+    to pinning down <i>where</i> the movement is. The four shares sum to 100% — region carries the
+    most localisation power, segment the least.</p>
+    <div class="drill">
+      <div class="drillRow"><span class="dname">region</span><span class="dpct">35.6%</span>
+        <div class="bar"><i style="width:35.6%"></i></div></div>
+      <div class="drillRow"><span class="dname">channel</span><span class="dpct">28.0%</span>
+        <div class="bar"><i style="width:28%"></i></div></div>
+      <div class="drillRow"><span class="dname">product_line</span><span class="dpct">26.5%</span>
+        <div class="bar"><i style="width:26.5%"></i></div></div>
+      <div class="drillRow"><span class="dname">segment</span><span class="dpct">9.9%</span>
+        <div class="bar"><i style="width:9.9%"></i></div></div>
+    </div>
+    <div class="drillEnd">
+      Applying all four pins one cell:<br>
+      <b style="font-family:'JetBrains Mono',monospace;font-size:12.5px">North → LargeAppliances →
+      Marketplace → Consumer</b><br>
+      the deepest rule that still retains the shortfall — <b>72.9%</b> of a ₹67.7 L weekly gap.
+    </div>
+  </div>
+  <div class="panel">
+    <h3>Volume, not price. Cancellations, not orders.</h3>
+    <p style="font-size:13.5px;color:var(--soft);margin-top:8px">The revenue decomposition, as a
+    bridge. Price pushed <i>up</i>. Volume buried it.</p>
+    <svg class="wf" viewBox="0 0 320 150" role="img"
+         aria-label="Revenue bridge: volume minus 77.0 lakh, price plus 13.1 lakh, mix zero, netting to minus 63.9 lakh per week.">
+      <line class="zeroline" x1="230" y1="6" x2="230" y2="140"/>
+      <text class="rl" x="4" y="26">Volume</text>
+      <rect class="bneg" x="50" y="13" width="180" height="18" rx="2"/>
+      <text class="inbar" x="224" y="26" text-anchor="end">−₹77.0 L</text>
+      <text class="rl" x="4" y="58">Price</text>
+      <rect class="bpos" x="230" y="45" width="30.6" height="18" rx="2"/>
+      <text x="264" y="58">+₹13.1 L</text>
+      <text class="rl" x="4" y="90">Mix</text>
+      <rect class="bneg" x="229" y="77" width="2" height="18"/>
+      <text x="236" y="90">₹0.0</text>
+      <line class="sep" x1="0" y1="104" x2="320" y2="104"/>
+      <text class="rl" x="4" y="128">Net</text>
+      <rect class="bnet" x="80.6" y="115" width="149.4" height="18" rx="2"/>
+      <text class="inbar" x="224" y="128" text-anchor="end">−₹63.9 L</text>
+    </svg>
+    <div class="tableWrap" style="margin-top:12px">
+    <table>
+      <tr><th>Term</th><th>Effect</th></tr>
+      <tr><td>Gross orders</td><td class="n">−8.2%</td></tr>
+      <tr><td>Cancellation rate</td><td class="n amb">8.8% → 21.4%</td></tr>
+    </table>
+    </div>
+    <p style="font-size:13px;color:var(--soft);margin-top:12px">
+      Prices went <b style="color:var(--ink)">up</b> 4.5% while units fell 20.9%. This was never a
+      pricing problem — and the cancellation term outweighs the orders term two to one.</p>
+  </div>
+</div>
+
+<footer>
+  <b style="color:var(--ink)">Fulcrum</b> · Accenture Innovation Challenge 2026 · BusinessIntelligence.ai.
+  Every figure on this page is emitted by the running prototype — <span class="mono">run_report.json</span>,
+  <span class="mono">evidence_object.json</span>, <span class="mono">telemetry.json</span>.
+  The optimiser under the slider is the same constraint-value model as the Python MILP, reimplemented
+  client-side over all 2<sup>7</sup> = 128 lever subsets so the envelope is continuous rather than
+  snapping between precomputed sweep points. 14/14 checklist · 24/24 property tests.
+</footer>
+
+</div>
 <script>
-const TABS = [
-  {id:'overview', num:'00', label:'Overview'},
-  {id:'freshness', num:'S2', label:'Sources & Freshness'},
-  {id:'detection', num:'S3', label:'Detection'},
-  {id:'attribution', num:'S4a', label:'Attribution'},
-  {id:'causal', num:'S4b', label:'Causal Trial'},
-  {id:'confidence', num:'S5', label:'Confidence'},
-  {id:'decision', num:'S6', label:'Decision'},
-  {id:'narratives', num:'S7', label:'Narratives'},
-  {id:'feedback', num:'S_FB', label:'Feedback Loop'},
-  {id:'method', num:'S9', label:'Method & Cost'},
-];
-
-const inr = v => {
-  const sign = v < 0 ? '−' : '';
-  const av = Math.abs(v);
-  if (av >= 1e7) return sign + '₹' + (av/1e7).toFixed(2) + ' Cr';
-  return sign + '₹' + (av/1e5).toFixed(1) + ' L';
+// =====================================================================
+// Constraint-value model — mirrors contracts/levers.yaml exactly.
+// Value belongs to CONSTRAINT STATES, not to actions. `requires` encodes
+// serial dependency, which is what produces complementarity and
+// redundancy without any hand-coded special case.
+// =====================================================================
+var CONSTRAINTS = {
+  C1:{label:"Delivery capacity",  value:1900000, requires:[]},
+  C2:{label:"Listing accuracy",   value: 600000, requires:["C1"]},
+  C3:{label:"Customer retention", value: 800000, requires:["C1"]},
+  C4:{label:"Price position",     value: 250000, requires:[]}
 };
-const pct = (v,d=1) => (v>0?'+':'') + v.toFixed(d) + '%';
-const esc = s => (s+'').replace(/[&<>]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+var LEVERS = [
+  {id:"L1",label:"Renegotiate 3PL SLA / revert to previous vendor",        cost:4000000,relieves:["C1"],           family:"repair",         auth:"director"},
+  {id:"L2",label:"Rebuild marketplace listing integration",                cost:2500000,relieves:["C2"],           family:"repair",         auth:"director"},
+  {id:"L3",label:"Compensation vouchers + win-back campaign",              cost:3000000,relieves:["C3"],           family:"repair",         auth:"manager"},
+  {id:"L4",label:"Targeted price rollback on Large Appliances",            cost:1200000,relieves:["C4"],           family:"repair",         auth:"director"},
+  {id:"L5",label:"Exit marketplace in North; route to own-site fulfilment",cost:5500000,relieves:["C1","C2","C3"], family:"structural",     auth:"vp"},
+  {id:"L6",label:"Bring North last-mile in-house for Large Appliances",    cost:8500000,relieves:["C1","C3"],      family:"structural",     auth:"vp"},
+  {id:"L7",label:"Suppress listings in affected North pincodes",           cost: 400000,relieves:["C2"],           family:"goal_modifying", auth:"manager"}
+];
+var MAX_BUDGET = 12000000;
 
-let DATA = null;
-
-// Python's json.dump writes bare Infinity/-Infinity/NaN by default, which is not
-// valid JSON and every browser's JSON.parse rejects it outright. Sanitize before parsing.
-function parseLenientJSON(raw){
-  const cleaned = raw
-    .replace(/:(\s*)-Infinity/g, ':$1-1e999')
-    .replace(/:(\s*)Infinity/g, ':$1 1e999')
-    .replace(/:(\s*)NaN/g, ':$1null');
-  return JSON.parse(cleaned);
-}
-
-async function boot(){
-  try{
-    const res = await fetch('./fulcrum-prototype/outputs/run_report.json');
-    if(!res.ok) throw new Error('HTTP '+res.status);
-    DATA = parseLenientJSON(await res.text());
-  }catch(err){
-    document.getElementById('main').innerHTML = `
-      <div class="error">
-        <p>Could not load <code>./fulcrum-prototype/outputs/run_report.json</code>.</p>
-        <p>Serve the <b>repo root</b> over HTTP — opening the file directly won't allow the fetch, and this file expects to sit next to <code>fulcrum-prototype/</code>.</p>
-        <p class="mono">python3 -m http.server 8000</p>
-        <p>Then open the forwarded port and go to <code>/dashboard.html</code>. On GitHub Pages, just visit <code>/dashboard.html</code> on the published site.</p>
-        <p style="opacity:.6">(${esc(err.message)})</p>
-      </div>`;
-    return;
+// V(S): union the relieved constraints, then pay out a constraint ONLY if
+// every constraint in its `requires` is also relieved. Union, not sum — so
+// redundancy never double-counts and complementarity falls out for free.
+function valueOf(set){
+  var relieved = {}, i, j;
+  for(i=0;i<set.length;i++) for(j=0;j<set[i].relieves.length;j++) relieved[set[i].relieves[j]]=1;
+  var v=0, paid=[];
+  for(var c in CONSTRAINTS){
+    if(!relieved[c]) continue;
+    var req = CONSTRAINTS[c].requires, ok = true;
+    for(j=0;j<req.length;j++) if(!relieved[req[j]]) ok = false;
+    if(ok){ v += CONSTRAINTS[c].value; paid.push(c); }
   }
-  buildNav();
-  renderHeader();
-  renderAll();
-  showTab('overview');
+  return {value:v, relieved:relieved, paid:paid};
 }
 
-function buildNav(){
-  const nav = document.getElementById('nav');
-  nav.innerHTML = TABS.map(t => `
-    <button data-tab="${t.id}">
-      <span class="tab-num mono">${t.num}</span>
-      <span>${t.label}</span>
-    </button>`).join('');
-  nav.querySelectorAll('button').forEach(b=>{
-    b.addEventListener('click', ()=> showTab(b.dataset.tab));
-  });
-}
-
-function showTab(id){
-  document.querySelectorAll('#nav button').forEach(b=>b.classList.toggle('active', b.dataset.tab===id));
-  document.querySelectorAll('.panel').forEach(p=>p.classList.toggle('active', p.id==='panel-'+id));
-}
-
-function renderHeader(){
-  const ev = DATA;
-  const conf = ev.confidence;
-  document.getElementById('case-id').textContent = 'FULCRUM CASE FILE — WEEK ENDING (see narratives)';
-  document.getElementById('case-title').textContent = 'Revenue movement, North / LargeAppliances / Marketplace / Consumer';
-  const attr = ev.attribution;
-  document.getElementById('case-kpi-line').innerHTML =
-    `Total gap vs forecast: <b>${inr(attr.total_gap)}</b> · ${attr.concentration.best_slice_share_of_gap_pct}% concentrated in one slice`;
-  const stampEl = document.getElementById('overall-stamp');
-  stampEl.textContent = conf.mode.toUpperCase() + ' — ' + (conf.confidence*100).toFixed(0) + '%';
-  stampEl.className = 'overall-stamp stamp ' + (conf.mode==='confident' ? 'confident' : 'abstain');
-}
-
-function renderAll(){
-  const main = document.getElementById('main');
-  main.innerHTML = TABS.map(t => `<div class="panel" id="panel-${t.id}"></div>`).join('');
-  renderOverview();
-  renderFreshness();
-  renderDetection();
-  renderAttribution();
-  renderCausal();
-  renderConfidence();
-  renderDecision();
-  renderNarratives();
-  renderFeedback();
-  renderMethod();
-}
-
-/* ---------------- OVERVIEW ---------------- */
-function renderOverview(){
-  const d = DATA;
-  const el = document.getElementById('panel-overview');
-  const accepted = d.hypotheses.find(h=>h.verdict==='accepted');
-  el.innerHTML = `
-    <div class="grid3">
-      <div class="card"><div class="stat-tile"><div class="num">${d.detection.n_material}</div><div class="lbl">Material findings</div></div></div>
-      <div class="card"><div class="stat-tile"><div class="num">${(d.confidence.confidence*100).toFixed(0)}%</div><div class="lbl">Movement explained</div></div></div>
-      <div class="card"><div class="stat-tile"><div class="num">${d.method_split.llm_share_pct}%</div><div class="lbl">Pipeline steps that are LLM</div></div></div>
-    </div>
-    <div class="card">
-      <h3>What happened</h3>
-      <p>Detection ran <b class="mono">${d.detection.n_tests}</b> slice × KPI tests; <b class="mono">${d.detection.n_material}</b> survived FDR correction and cleared the business-materiality bar.</p>
-      <p>The shortfall concentrates: <b>${d.attribution.concentration.best_slice_share_of_gap_pct}%</b> of the gap sits in one slice — ${Object.values(d.attribution.concentration.best_slice_rule).join(' / ')}.</p>
-      ${accepted ? `<p>Causal engine accepted <b>${esc(accepted.label)}</b> as the driver, explaining ${(d.confidence.confidence*100).toFixed(0)}% of the movement, worth ${inr(-Math.abs(d.attribution.total_gap*d.confidence.confidence))} /week.</p>` : ''}
-      <p>${d.confidence.unexplained_inr > 0 ? `${inr(d.confidence.unexplained_inr)}/week remains honestly unattributed rather than force-fit to the accepted cause.` : ''}</p>
-      <div class="hair"></div>
-      <p style="font-size:12px;">Use the tabs on the left to walk the case the way the engine built it: sources → detection → attribution → causal trial → confidence → decision → narratives → method &amp; cost.</p>
-    </div>
-  `;
-}
-
-/* ---------------- FRESHNESS (S2) ---------------- */
-function renderFreshness(){
-  const d = DATA;
-  const el = document.getElementById('panel-freshness');
-  const rows = d.freshness.map(f=>{
-    const util = Math.min(100, (f.age_hours/f.tolerance_hours)*100);
-    return `<tr>
-      <td>${esc(f.source)}</td>
-      <td class="mono">${esc(f.native_grain)}</td>
-      <td class="mono">${esc(f.latest_period)}</td>
-      <td class="mono">${f.age_hours}h / ${f.tolerance_hours}h</td>
-      <td><span class="status-pill ${f.status==='fresh'?'fresh':'stale'}">${esc(f.status)}</span></td>
-    </tr>`;
-  }).join('');
-  const sparse = d.sparse_history;
-  el.innerHTML = `
-    <div class="card">
-      <h3>Source freshness — cross-source reconciliation</h3>
-      <table>
-        <thead><tr><th>Source</th><th>Grain</th><th>Latest period</th><th>Age / tolerance</th><th>Status</th></tr></thead>
-        <tbody>${rows}</tbody>
-      </table>
-    </div>
-    <div class="card">
-      <h3>Grain policy — abstention in action</h3>
-      <p>NPS is monthly-grain with a one-month publication lag. Rather than interpolate it into a weekly claim, the semantic contract excludes it from weekly attribution and the engine says so explicitly.</p>
-    </div>
-    <div class="card">
-      <h3>Sparse-history scenario</h3>
-      <p><b>${esc(sparse.example)}</b> — only ${sparse.weeks} weeks of history.</p>
-      <p><b class="mono">${sparse.n_sparse_slices}</b> slices flagged sparse; <b class="mono">${sparse.n_invalid_intervals}</b> have no valid conformal interval at the target confidence and are marked unreliable rather than silently reported.</p>
-    </div>
-  `;
-}
-
-/* ---------------- DETECTION (S3) ---------------- */
-function renderDetection(){
-  const d = DATA.detection;
-  const el = document.getElementById('panel-detection');
-  const steps = [
-    {label:'Slice × KPI tests', val:d.n_tests},
-    {label:'Naively significant', val:d.n_naive_significant},
-    {label:'Survive FDR', val:d.n_survives_fdr},
-    {label:'Material', val:d.n_material},
-  ];
-  const max = d.n_tests;
-  el.innerHTML = `
-    <div class="card">
-      <h3>From raw tests to material findings</h3>
-      ${steps.map(s=>`
-        <div class="funnel-step">
-          <span style="width:170px">${s.label}</span>
-          <div class="bar-track" style="flex:1"><div class="bar-fill" style="width:${(s.val/max*100).toFixed(1)}%"></div></div>
-          <span class="funnel-num">${s.val.toLocaleString()}</span>
-        </div>`).join('')}
-      <p style="margin-top:10px;"><b class="mono">${d.false_alarms_avoided}</b> false alarms suppressed by multiplicity control.</p>
-    </div>
-    <div class="card">
-      <h3>Calibration proof</h3>
-      <div class="grid2">
-        <div class="stat-tile"><div class="num">${(d.empirical_coverage*100).toFixed(2)}%</div><div class="lbl">Empirical coverage</div></div>
-        <div class="stat-tile"><div class="num">${(d.target_coverage*100).toFixed(0)}%</div><div class="lbl">Target coverage</div></div>
-      </div>
-      <p style="margin-top:10px;">Measured on <b class="mono">${d.coverage_n.toLocaleString()}</b> held-out residuals — a genuine holdout, not the calibration set itself.</p>
-    </div>
-  `;
-}
-
-/* ---------------- ATTRIBUTION (S4a) ---------------- */
-function renderAttribution(){
-  const a = DATA.attribution;
-  const el = document.getElementById('panel-attribution');
-  const maxShap = Math.max(...Object.values(a.shapley));
-  const shapRows = Object.entries(a.shapley).sort((x,y)=>y[1]-x[1]).map(([k,v])=>`
-    <div class="bar-row">
-      <div class="bar-label">${esc(k)}</div>
-      <div class="bar-track"><div class="bar-fill" style="width:${(v/maxShap*100).toFixed(1)}%"></div></div>
-      <div class="bar-val">${v.toFixed(1)}%</div>
-    </div>`).join('');
-  const slice = Object.entries(a.concentration.best_slice_rule).map(([k,v])=>`${k}: <b>${esc(v)}</b>`).join(' · ');
-  const pvm = a.pvm, funnel = a.funnel;
-  el.innerHTML = `
-    <div class="card">
-      <h3>Shapley localisation power by dimension</h3>
-      ${shapRows}
-      <div class="hair"></div>
-      <p>Most specific slice retaining the shortfall — ${slice}</p>
-      <p>carries <b class="mono">${a.concentration.best_slice_share_of_gap_pct}%</b> of the gap (${a.concentration.n_leaves_for_80pct_of_shortfall} leaves needed for 80% of it, out of ${a.concentration.n_negative_leaves} negative leaves).</p>
-    </div>
-    <div class="grid2">
-      <div class="card">
-        <h3>Price / volume / mix</h3>
-        <p>units <b class="mono">${pct(pvm.units_change_pct)}</b>, ASP <b class="mono">${pct(pvm.asp_change_pct)}</b></p>
-        <p>Dominant term: <b>${pvm.dominant_term.toUpperCase()}</b> — this reads as a volume problem, not a pricing one.</p>
-        <p style="font-size:12px; opacity:.8;">volume ${inr(pvm.volume_effect)} · price ${inr(pvm.price_effect)} · mix ${inr(pvm.mix_effect)}</p>
-      </div>
-      <div class="card">
-        <h3>Funnel decomposition</h3>
-        <p>gross orders <b class="mono">${pct(funnel.gross_orders_change_pct)}</b>, cancellation rate <b class="mono">${(funnel.cancellation_rate_baseline*100).toFixed(1)}% → ${(funnel.cancellation_rate_current*100).toFixed(1)}%</b> (${pct(funnel.cancellation_rate_change_pp,1)}pp)</p>
-        <p>Dominant term: <b>${funnel.dominant_term.toUpperCase()}</b> — demand held, fulfilment broke.</p>
-      </div>
-    </div>
-  `;
-}
-
-/* ---------------- CAUSAL TRIAL (S4b) ---------------- */
-function renderCausal(){
-  const d = DATA;
-  const el = document.getElementById('panel-causal');
-  const evidence = (window.EVIDENCE || {});
-  const acceptedEv = (evidence.accepted_causes || [])[0];
-  const cards = d.hypotheses.map(h=>{
-    const isAccepted = h.verdict === 'accepted';
-    return `
-      <div class="card case-card">
-        <div class="verdict-stamp stamp ${isAccepted?'accepted':'rejected'}">${isAccepted?'Accepted':'Rejected'}</div>
-        <h3>${esc(h.hid)} — ${esc(h.label)}</h3>
-        <p>Source: ${esc(h.source)} · cause node: <span class="mono">${esc(h.cause_node)}</span> · start: <span class="mono">${esc(h.start)}</span></p>
-        ${h.reason ? `<div class="hair"></div><p><b>Killed by:</b> ${esc(h.reason)}</p>` : ''}
-        ${isAccepted && acceptedEv ? `
-          <div class="hair"></div>
-          <p><b>Mechanism:</b> ${esc(acceptedEv.mechanism_kpi)} ${pct(acceptedEv.mechanism_effect_pp)}pp</p>
-          <p><b>Impact:</b> ${inr(acceptedEv.revenue_impact_per_week)}/week</p>
-          <p><b>Survived:</b> ${acceptedEv.tests_passed} falsification tests</p>
-        ` : ''}
-      </div>`;
-  }).join('');
-  el.innerHTML = `
-    <div class="card">
-      <h3>3 candidates on trial — 1 survives</h3>
-      <p>Every hypothesis is prosecuted the same way: temporal precedence, difference-in-differences, synthetic control, placebo tests, dose-response, and a refutation suite that tries to break the engine's own finding.</p>
-    </div>
-    ${cards}
-  `;
-}
-
-/* ---------------- CONFIDENCE (S5) ---------------- */
-function renderConfidence(){
-  const c = DATA.confidence;
-  const el = document.getElementById('panel-confidence');
-  const triggerRows = c.triggers.map(t=>`
-    <div class="trigger-row">
-      <div class="trigger-dot ${t.fired?'fired':'ok'}"></div>
-      <div class="trigger-body">
-        <b>${esc(t.code)}</b> — ${t.fired ? '<span style="color:var(--amber)">FIRED</span>' : 'ok'}
-        <p>${esc(t.detail)}</p>
-        ${t.fired && t.discriminating_test ? `<div class="discriminating"><b>Discriminating test:</b> ${esc(t.discriminating_test)}</div>` : ''}
-      </div>
-    </div>`).join('');
-  el.innerHTML = `
-    <div class="grid2">
-      <div class="card">
-        <div class="stat-tile"><div class="num">${(c.confidence*100).toFixed(1)}%</div><div class="lbl">Explained fraction</div></div>
-        <p style="margin-top:10px;">${esc(c.rationale)}</p>
-      </div>
-      <div class="card">
-        <div class="stat-tile"><div class="num">${inr(c.unexplained_inr)}</div><div class="lbl">Unexplained / week</div></div>
-        <p style="margin-top:10px;">Left honestly unattributed rather than stretched to fit the accepted cause.</p>
-      </div>
-    </div>
-    <div class="card">
-      <h3>Abstention triggers — 7 enumerated checks</h3>
-      ${triggerRows}
-    </div>
-  `;
-}
-
-/* ---------------- DECISION (S6) ---------------- */
-function renderDecision(){
-  const d = DATA.decision;
-  const el = document.getElementById('panel-decision');
-  const sweep = d.budget_sweep;
-  el.innerHTML = `
-    <div class="card">
-      <h3>Budget vs. naive "fix everything"</h3>
-      <div class="grid2">
-        <div class="stat-tile"><div class="num">${inr(d.naive_repair_cost)}</div><div class="lbl">Naive repair-everything cost</div></div>
-        <div class="stat-tile"><div class="num">${inr(d.chosen.cost)}</div><div class="lbl">Fulcrum's chosen bundle</div></div>
-      </div>
-      <p style="margin-top:10px;">Solver cross-check (exhaustive vs. MILP): <b>${d.solvers_agree ? 'AGREE' : 'DISAGREE'}</b></p>
-    </div>
-    <div class="card">
-      <h3>Budget slider — the recommendation changes shape, not just size</h3>
-      <div class="slider-wrap">
-        <input type="range" id="budget-slider" min="0" max="${sweep.length-1}" value="${sweep.length-1}" step="1">
-        <div class="slider-ticks">${sweep.map(s=>`<span>${inr(s.budget_inr)}</span>`).join('')}</div>
-      </div>
-      <div class="bundle-out" id="bundle-out"></div>
-    </div>
-  `;
-  const slider = document.getElementById('budget-slider');
-  const renderBundle = (idx)=>{
-    const s = sweep[idx];
-    const out = document.getElementById('bundle-out');
-    out.innerHTML = `
-      <div class="fam">${s.family.replace(/_/g,' ')}</div>
-      <div class="lever-list">${s.chosen_labels.length ? s.chosen_labels.map(esc).join(' + ') : 'Do nothing — no bundle clears the value bar at this budget.'}</div>
-      <div class="figs">
-        <div><div class="fig-num">${inr(s.cost_inr)}</div><div class="fig-label">Cost</div></div>
-        <div><div class="fig-num">${inr(s.value_per_week_inr)}</div><div class="fig-label">Recovered / week</div></div>
-        <div><div class="fig-num">${isFinite(s.payback_weeks) ? s.payback_weeks.toFixed(1)+'w' : '—'}</div><div class="fig-label">Payback</div></div>
-        <div><div class="fig-num">${s.constraints_realised.length}</div><div class="fig-label">Constraints relieved</div></div>
-      </div>
-    `;
-  };
-  slider.addEventListener('input', e=> renderBundle(+e.target.value));
-  renderBundle(sweep.length-1);
-}
-
-/* ---------------- NARRATIVES (S7) ---------------- */
-function renderNarratives(){
-  const d = DATA;
-  const el = document.getElementById('panel-narratives');
-  const toggles = d.narratives.map((n,i)=>`<button class="persona-btn ${i===0?'active':''}" data-idx="${i}">${esc(n.persona.replace(/_/g,' '))}</button>`).join('');
-  el.innerHTML = `
-    <div class="card">
-      <h3>Persona narratives — same evidence, different depth</h3>
-      <div class="persona-toggle">${toggles}</div>
-      <div id="narrative-body"></div>
-    </div>
-    <div class="grid2">
-      <div class="card">
-        <h3>Entitlement check</h3>
-        <p>Leaked regions in ops-manager narrative: <b class="mono">${d.entitlement_check.leaked_regions.length}</b></p>
-        <p><b style="color:var(--accept)">${d.entitlement_check.passed ? 'PASS' : 'FAIL'}</b> — row-level security enforced in the narrative itself, not just the query.</p>
-      </div>
-      <div class="card">
-        <h3>Validator negative test</h3>
-        <p>Fabricated statistics were deliberately injected into a draft narrative to test the numeric-grounding validator.</p>
-        <p>Ungrounded numerals caught: <span class="mono">${d.validator_negative_test.ungrounded.map(esc).join(', ')}</span></p>
-        <p><b style="color:${d.validator_negative_test.passed ? 'var(--accept)' : 'var(--reject)'}">${d.validator_negative_test.passed ? 'PASS' : 'BLOCKED (as intended)'}</b> — fabrication does not reach the artefact.</p>
-      </div>
-    </div>
-  `;
-  const body = document.getElementById('narrative-body');
-  const show = (i)=>{
-    const n = d.narratives[i];
-    const withheldMatch = n.text.match(/(\d+) further action/);
-    body.innerHTML = `
-      <div class="narrative-text">${esc(n.text)}</div>
-      <span class="grounding-badge">✓ ${n.validation.numbers_in_text} numerals, ${n.validation.ungrounded.length} ungrounded</span>
-      ${withheldMatch ? `<div class="redact-bar">${withheldMatch[1]} action(s) withheld — require authority above this persona's clearance</div>` : ''}
-    `;
-  };
-  document.querySelectorAll('.persona-btn').forEach(b=>{
-    b.addEventListener('click', ()=>{
-      document.querySelectorAll('.persona-btn').forEach(x=>x.classList.remove('active'));
-      b.classList.add('active');
-      show(+b.dataset.idx);
-    });
-  });
-  show(0);
-}
-
-/* ---------------- FEEDBACK LOOP (S_FB) ---------------- */
-const PENDING_KEY = 'fulcrum_pending_feedback';
-
-function loadPending(){
-  try{ return JSON.parse(localStorage.getItem(PENDING_KEY) || '[]'); }
-  catch(e){ return []; }
-}
-function savePending(list){
-  localStorage.setItem(PENDING_KEY, JSON.stringify(list));
-}
-
-function renderFeedback(){
-  const fb = DATA.feedback || {summary:{n_records:0, by_verdict:{}, entities_with_history:[]}, records:[], log_path:'outputs/feedback_log.jsonl'};
-  const el = document.getElementById('panel-feedback');
-  const conflictTrigger = (DATA.confidence.triggers || []).find(t => t.code === 'FEEDBACK_CONFLICT');
-
-  const verdictRows = Object.entries(fb.summary.by_verdict).map(([k,v])=>`
-    <div class="stat-tile"><div class="num">${v}</div><div class="lbl">${esc(k.replace(/_/g,' '))}</div></div>`).join('');
-
-  const historyRows = fb.records.map(r=>`
-    <tr>
-      <td class="mono">${esc(r.entity_type)}/${esc(r.entity_id)}</td>
-      <td>${r.cause_node ? `<span class="mono">${esc(r.cause_node)}</span>` : '—'}</td>
-      <td><span class="status-pill ${r.verdict==='rejected'?'stale':'fresh'}">${esc(r.verdict)}</span></td>
-      <td style="max-width:280px;">${esc(r.note)}</td>
-      <td class="mono" style="font-size:11px;">${esc(r.user)}</td>
-    </tr>`).join('');
-
-  el.innerHTML = `
-    <div class="card">
-      <h3>Feedback log — ${fb.summary.n_records} record(s) at <span class="mono">${esc(fb.log_path)}</span></h3>
-      <div class="grid3">${verdictRows || '<p>No feedback recorded yet.</p>'}</div>
-    </div>
-    ${conflictTrigger ? `
-    <div class="card">
-      <h3>FEEDBACK_CONFLICT — ${conflictTrigger.fired ? '<span style="color:var(--reject)">FIRED</span>' : '<span style="color:var(--accept)">ok</span>'}</h3>
-      <p>${esc(conflictTrigger.detail)}</p>
-      ${conflictTrigger.fired ? `<div class="discriminating"><b>Discriminating test:</b> ${esc(conflictTrigger.discriminating_test)}</div>` : ''}
-      <p style="font-size:12px; margin-top:8px;">This does not override today's causal verdict — S4b's statistics stay authoritative. It surfaces prior human context alongside the finding so a reviewer sees it before acting.</p>
-    </div>` : ''}
-    <div class="card">
-      <h3>Prior review history</h3>
-      ${fb.records.length ? `
-      <table>
-        <thead><tr><th>Entity</th><th>Cause node</th><th>Verdict</th><th>Note</th><th>By</th></tr></thead>
-        <tbody>${historyRows}</tbody>
-      </table>` : '<p>Nothing recorded yet.</p>'}
-    </div>
-    <div class="card">
-      <h3>Record new feedback</h3>
-      <p style="font-size:12px;">This dashboard is static (no backend), so new entries are kept in this browser's local storage and never sent anywhere. Use <b>Export</b> below to download them as JSONL, then append that file to <span class="mono">fulcrum-prototype/outputs/feedback_log.jsonl</span> and re-run <span class="mono">python run_demo.py</span> so the engine actually uses them next time.</p>
-      <div class="grid2" style="margin-top:12px;">
-        <div>
-          <label style="font-size:11px; text-transform:uppercase; color:var(--text-paper-dim);">Entity type</label><br>
-          <select id="fb-entity-type" style="width:100%; padding:6px; margin-top:4px;">
-            <option value="hypothesis">hypothesis</option>
-            <option value="action">action</option>
-          </select>
-        </div>
-        <div>
-          <label style="font-size:11px; text-transform:uppercase; color:var(--text-paper-dim);">Entity ID</label><br>
-          <input id="fb-entity-id" placeholder="e.g. E1 or L5" style="width:100%; padding:6px; margin-top:4px;">
-        </div>
-        <div>
-          <label style="font-size:11px; text-transform:uppercase; color:var(--text-paper-dim);">Cause node (hypotheses only)</label><br>
-          <input id="fb-cause-node" placeholder="e.g. logistics_vendor" style="width:100%; padding:6px; margin-top:4px;">
-        </div>
-        <div>
-          <label style="font-size:11px; text-transform:uppercase; color:var(--text-paper-dim);">Verdict</label><br>
-          <select id="fb-verdict" style="width:100%; padding:6px; margin-top:4px;">
-            <option value="confirmed">confirmed</option>
-            <option value="rejected">rejected</option>
-            <option value="acted_on">acted_on</option>
-            <option value="no_effect">no_effect</option>
-          </select>
-        </div>
-      </div>
-      <label style="font-size:11px; text-transform:uppercase; color:var(--text-paper-dim); margin-top:10px; display:block;">Note</label>
-      <textarea id="fb-note" rows="2" style="width:100%; padding:6px; margin-top:4px; font-family:inherit;" placeholder="Why?"></textarea>
-      <label style="font-size:11px; text-transform:uppercase; color:var(--text-paper-dim); margin-top:10px; display:block;">Your name</label>
-      <input id="fb-user" placeholder="analyst" style="width:100%; padding:6px; margin-top:4px;">
-      <div style="margin-top:14px; display:flex; gap:10px; flex-wrap:wrap;">
-        <button id="fb-add-btn" class="persona-btn active" style="cursor:pointer;">Add feedback</button>
-        <button id="fb-export-btn" class="persona-btn" style="cursor:pointer;">Export pending (.jsonl)</button>
-        <button id="fb-clear-btn" class="persona-btn" style="cursor:pointer;">Clear pending</button>
-      </div>
-      <div id="fb-pending-list" style="margin-top:14px;"></div>
-    </div>
-  `;
-
-  const renderPending = ()=>{
-    const pending = loadPending();
-    const list = document.getElementById('fb-pending-list');
-    if(!pending.length){ list.innerHTML = '<p style="font-size:12px; opacity:.7;">No pending entries this session.</p>'; return; }
-    list.innerHTML = `<p style="font-size:11px; text-transform:uppercase; color:var(--text-paper-dim);">Pending this session (${pending.length})</p>` +
-      pending.map(r=>`<div class="redact-bar" style="background:var(--paper-dim); color:var(--text-paper);">${esc(r.entity_type)}/${esc(r.entity_id)} — ${esc(r.verdict)}</div>`).join('');
-  };
-
-  document.getElementById('fb-add-btn').addEventListener('click', ()=>{
-    const entity_type = document.getElementById('fb-entity-type').value;
-    const entity_id = document.getElementById('fb-entity-id').value.trim();
-    const cause_node = document.getElementById('fb-cause-node').value.trim();
-    const verdict = document.getElementById('fb-verdict').value;
-    const note = document.getElementById('fb-note').value.trim();
-    const user = document.getElementById('fb-user').value.trim() || 'analyst';
-    if(!entity_id){ document.getElementById('fb-entity-id').focus(); return; }
-    const pending = loadPending();
-    pending.push({entity_type, entity_id, cause_node, verdict, note, user, ts: new Date().toISOString()});
-    savePending(pending);
-    document.getElementById('fb-entity-id').value = '';
-    document.getElementById('fb-cause-node').value = '';
-    document.getElementById('fb-note').value = '';
-    renderPending();
-  });
-
-  document.getElementById('fb-export-btn').addEventListener('click', ()=>{
-    const pending = loadPending();
-    if(!pending.length) return;
-    const jsonl = pending.map(r=>JSON.stringify(r)).join('\n') + '\n';
-    const blob = new Blob([jsonl], {type:'application/x-ndjson'});
-    const a = document.createElement('a');
-    a.href = URL.createObjectURL(blob);
-    a.download = 'feedback_log_new_entries.jsonl';
-    a.click();
-  });
-
-  document.getElementById('fb-clear-btn').addEventListener('click', ()=>{
-    savePending([]);
-    renderPending();
-  });
-
-  renderPending();
-}
-
-/* ---------------- METHOD & COST (S9) ---------------- */
-function renderMethod(){
-  const m = DATA.method_split;
-  const t = DATA.telemetry;
-  const el = document.getElementById('panel-method');
-  const cats = Object.entries(m.by_category).sort((a,b)=>b[1]-a[1]);
-  const maxCat = Math.max(...cats.map(c=>c[1]));
-  const catRows = cats.map(([k,v])=>`
-    <div class="bar-row">
-      <div class="bar-label">${esc(k.replace(/_/g,' '))}</div>
-      <div class="bar-track"><div class="bar-fill" style="width:${(v/maxCat*100).toFixed(1)}%"></div></div>
-      <div class="bar-val">${v}</div>
-    </div>`).join('');
-  const stageRows = t.stages.map(s=>`<tr><td>${esc(s.name)}</td><td class="mono">${esc(s.kind)}</td><td class="mono">${s.latency_ms.toFixed(1)} ms</td></tr>`).join('');
-  el.innerHTML = `
-    <div class="grid3">
-      <div class="card"><div class="stat-tile"><div class="num">${m.total_pipeline_steps}</div><div class="lbl">Pipeline steps</div></div></div>
-      <div class="card"><div class="stat-tile"><div class="num">${m.llm_steps}</div><div class="lbl">LLM steps (${m.llm_share_pct}%)</div></div></div>
-      <div class="card"><div class="stat-tile"><div class="num">$${t.estimated_cost.usd.toFixed(4)}</div><div class="lbl">Estimated cost / insight</div></div></div>
-    </div>
-    <div class="card">
-      <h3>Steps by category</h3>
-      ${catRows}
-      <div class="hair"></div>
-      <p>${esc(m.llm_scope)}</p>
-    </div>
-    <div class="card">
-      <h3>Telemetry — latency by stage</h3>
-      <p>Total latency: <b class="mono">${(t.total_latency_ms/1000).toFixed(1)}s</b> · LLM share of latency: <b class="mono">${t.llm_vs_non_llm.llm_latency_pct}%</b></p>
-      <table>
-        <thead><tr><th>Stage</th><th>Kind</th><th>Latency</th></tr></thead>
-        <tbody>${stageRows}</tbody>
-      </table>
-    </div>
-  `;
-}
-
-/* pull evidence_object.json too, for causal-trial mechanism detail */
-(async function(){
-  try{
-    const r = await fetch('./fulcrum-prototype/outputs/evidence_object.json');
-    if(r.ok) window.EVIDENCE = parseLenientJSON(await r.text());
-  }catch(e){ /* optional enrichment only */ }
-  boot();
+// Exhaustive over 2^7 = 128 subsets, evaluated once at load. Brute force is
+// instant and provably optimal; the Python MILP agrees at every budget.
+var SUBSETS = (function(){
+  var out=[];
+  for(var m=0;m<(1<<LEVERS.length);m++){
+    var set=[],cost=0;
+    for(var i=0;i<LEVERS.length;i++) if(m&(1<<i)){ set.push(LEVERS[i]); cost+=LEVERS[i].cost; }
+    var r=valueOf(set);
+    out.push({mask:m,set:set,cost:cost,value:r.value,relieved:r.relieved,paid:r.paid});
+  }
+  return out;
 })();
+
+function optimise(budget, excludeMask){
+  var best=null;
+  for(var i=0;i<SUBSETS.length;i++){
+    var s=SUBSETS[i];
+    if(s.cost>budget) continue;
+    if(excludeMask!==undefined && s.mask===excludeMask) continue;
+    if(!best || s.value>best.value || (s.value===best.value && s.cost<best.cost)) best=s;
+  }
+  return best;
+}
+
+// Standalone value of each lever on an empty board. L2, L3 and L7 all come
+// back ₹0 — their constraints are gated behind C1. This is the whole thesis
+// as a lookup table: the action is identical, the value is not.
+var STANDALONE = {};
+for(var _i=0;_i<LEVERS.length;_i++) STANDALONE[LEVERS[_i].id] = valueOf([LEVERS[_i]]).value;
+
+function leverById(id){
+  for(var i=0;i<LEVERS.length;i++) if(LEVERS[i].id===id) return LEVERS[i];
+  return null;
+}
+
+// Greedy heuristics, kept only for comparison. These are what you get when you
+// rank ACTIONS instead of constraint states — the mistake the whole model exists
+// to avoid. Both are honest implementations, not strawmen.
+function greedy(budget, rank){
+  var pool = LEVERS.slice().sort(rank), set = [], cost = 0;
+  for(var i=0;i<pool.length;i++)
+    if(cost + pool[i].cost <= budget){ set.push(pool[i]); cost += pool[i].cost; }
+  return {set:set, cost:cost, value:valueOf(set).value};
+}
+function cheapestFirst(b){ return greedy(b, function(a,x){ return a.cost - x.cost; }); }
+function densityFirst(b){ return greedy(b, function(a,x){
+  return (STANDALONE[x.id]/x.cost) - (STANDALONE[a.id]/a.cost); }); }
+
+var REPAIR_ALL = [leverById("L1"), leverById("L2"), leverById("L3")];
+var REPAIR_COST = 4000000 + 2500000 + 3000000;
+
+function fmt(n){
+  return n>=10000000 ? "₹"+(n/10000000).toFixed(2)+" Cr" : "₹"+(n/100000).toFixed(1)+" L";
+}
+function familyOf(set){
+  if(!set.length) return "do nothing";
+  var seen={},out=[];
+  for(var i=0;i<set.length;i++) if(!seen[set[i].family]){ seen[set[i].family]=1; out.push(set[i].family); }
+  return out.sort().join(" + ").replace(/_/g," ");
+}
+
+// ---------- DOM refs, cached once ----------
+function $(id){ return document.getElementById(id); }
+var elBudget=$("budget"), elBudgetVal=$("budgetVal"), elFamily=$("familyTag"),
+    elLevers=$("leverList"), elChips=$("chips"), elCost=$("ecCost"), elValue=$("ecValue"),
+    elPayback=$("ecPayback"), elSlack=$("ecSlack"), elCons=$("ecCons"), elCallout=$("callout"),
+    elRunner=$("runnerUp"), elRunnerBody=$("runnerUpBody"), elMark=$("curveMark"), elDot=$("curveDot"),
+    elCurveLine=$("curveLine"), elCurveArea=$("curveArea"),
+    elScope=$("personaScope"), elNote=$("personaNote"), elPersonaLevers=$("personaLevers");
+
+var elGrounded=$("groundedText"), elGBadge=$("groundedBadge"),
+    elCmpBody=$("cmpBody"), elLedger=$("ledgerBody"), elForceBar=$("forceBar");
+
+var persona = "cat";
+var AUTH = {ops:{manager:1}, cat:{manager:1,director:1,vp:1}};
+var lastBundleKey = "L4+L5";   // matches the statically rendered default at ₹70 L
+var lastExtrasKey = "";        // guards the ledger/compare/DAG against per-event rebuilds
+var forced = {};               // lever id -> forced into the bundle by the user
+
+var _cs = getComputedStyle(document.documentElement);
+var TOK_GREEN = _cs.getPropertyValue("--green").trim() || "#3DDBA0";
+var TOK_RULE  = _cs.getPropertyValue("--rule").trim()  || "#332E4D";
+
+function idsOf(set){
+  return set.length ? set.map(function(l){ return l.id; }).join("+") : "none";
+}
+// bundle actually shown once the user has forced extra levers in
+function effective(best){
+  var set = best.set.slice(), i;
+  for(i=0;i<LEVERS.length;i++)
+    if(forced[LEVERS[i].id] && set.indexOf(LEVERS[i]) === -1) set.push(LEVERS[i]);
+  var cost = 0;
+  for(i=0;i<set.length;i++) cost += set[i].cost;
+  return {set:set, cost:cost, value:valueOf(set).value};
+}
+
+// ---------- value curve, drawn from the model rather than hard-coded ----------
+var VB_W=1000, VB_TOP=30, VB_BOT=130;
+function drawCurve(){
+  var maxV=0, i;
+  for(i=0;i<SUBSETS.length;i++) if(SUBSETS[i].value>maxV) maxV=SUBSETS[i].value;
+  var x=function(b){ return (b/MAX_BUDGET)*VB_W; },
+      y=function(v){ return VB_BOT-(v/maxV)*(VB_BOT-VB_TOP); };
+  var d="M0,"+y(0), prevV=0, step=MAX_BUDGET/2400;
+  for(var b=0;b<=MAX_BUDGET;b+=step){
+    var v=optimise(b).value;
+    if(v!==prevV){ d+=" H"+x(b).toFixed(2)+" V"+y(v).toFixed(2); prevV=v; }
+  }
+  d+=" H"+VB_W;
+  elCurveLine.setAttribute("d", d);
+  elCurveArea.setAttribute("d", d+" V"+VB_BOT+" H0 Z");
+  return {x:x, y:y};
+}
+var SCALE = drawCurve();
+
+// ---------- render ----------
+function render(){
+  var budget = +elBudget.value, i;
+  elBudget.style.setProperty("--pct", (budget/MAX_BUDGET*100)+"%");
+  elBudgetVal.textContent = fmt(budget);
+  elBudget.setAttribute("aria-valuetext", fmt(budget));
+
+  var best = optimise(budget), allowed = AUTH[persona];
+
+  // family tag
+  var hasStructural = false;
+  for(i=0;i<best.set.length;i++) if(best.set[i].family==="structural") hasStructural = true;
+  elFamily.textContent = familyOf(best.set);
+  elFamily.className = "familyTag" + (!best.set.length ? " none" : hasStructural ? " structural" : "");
+
+  // lever list — rebuilt only when the bundle or persona actually changes, so
+  // dragging the slider does not replay the entry animation on every event
+  var key = best.set.length ? best.set.map(function(l){return l.id;}).join("+") : "none";
+  var bundleChanged = (key !== lastBundleKey);
+  if(bundleChanged || elLevers.getAttribute("data-persona") !== persona){
+    var html;
+    if(best.set.length){
+      html = best.set.map(function(l){
+        var locked = !allowed[l.auth];
+        return '<div class="lever'+(locked?' locked':'')+'">'
+             + '<div class="lid">'+l.id+'</div>'
+             + '<div class="lbl">'+l.label
+             + (locked?'<span class="withheld">withheld · '+l.auth+'</span>':'')
+             + '</div><div class="lc">'+fmt(l.cost)+'</div></div>';
+      }).join("");
+    } else {
+      html = '<div class="lever"><div class="lid">L0</div>'
+           + '<div class="lbl">Do nothing — no bundle clears its own cost at this envelope</div>'
+           + '<div class="lc">₹0.0 L</div></div>';
+    }
+    elLevers.innerHTML = html;
+    elLevers.setAttribute("data-persona", persona);
+    if(bundleChanged){
+      elLevers.classList.remove("changed");
+      void elLevers.offsetWidth;
+      elLevers.classList.add("changed");
+    }
+    lastBundleKey = key;
+  }
+
+  // constraint chips
+  var chips = "";
+  for(var c in CONSTRAINTS){
+    var meta = CONSTRAINTS[c], on = !!best.relieved[c], gated = false;
+    for(var r=0;r<meta.requires.length;r++) if(!best.relieved[meta.requires[r]]) gated = true;
+    var cls = on && !gated ? "on" : (on && gated ? "blocked" : "");
+    chips += '<span class="chip '+cls+'">'+c+' · '+meta.label+(on&&gated?" · gated":"")+'</span>';
+  }
+  elChips.innerHTML = chips;
+
+  // economics
+  elCost.textContent    = fmt(best.cost);
+  elValue.textContent   = fmt(best.value);
+  elValue.className     = best.value>0 ? "pos" : "";
+  elPayback.textContent = best.value>0 ? (best.cost/best.value).toFixed(1)+" wk" : "—";
+  elSlack.textContent   = fmt(budget-best.cost);
+  elCons.textContent    = best.paid.length+" of 4";
+
+  // runner-up bundle, and why it lost
+  var ru = optimise(budget, best.mask);
+  if(ru && best.set.length && ru.value>0 && ru.value<best.value){
+    var missing = [];
+    for(var p=0;p<best.paid.length;p++) if(ru.paid.indexOf(best.paid[p])===-1) missing.push(best.paid[p]);
+    var names = missing.map(function(m){ return "<b>"+m+" · "+CONSTRAINTS[m].label+"</b>"; }).join(" and ");
+    elRunnerBody.innerHTML = "<b>"+ru.set.map(function(l){return l.id;}).join(" + ")+"</b>"
+      + (ru.set.length===1 ? " alone" : "") + " — " + fmt(ru.value) + " per week for " + fmt(ru.cost)
+      + ". It loses by " + fmt(best.value-ru.value) + " per week"
+      + (missing.length ? ": it leaves " + names + " binding." : ".");
+    elRunner.className = "runnerUp";
+  } else {
+    elRunner.className = "runnerUp hidden";
+  }
+
+  // ---------- band callout: the demo moment ----------
+  var msg = "", naive = 4000000+2500000+3000000, usesL5 = false;
+  for(i=0;i<best.set.length;i++) if(best.set[i].id==="L5") usesL5 = true;
+
+  if(budget>=9500000){
+    msg = '<b>Above ₹95 L the constraint set is exhausted.</b> Further capital buys redundant relief — '
+        + 'two levers covering the same constraint contribute a union, not a sum. The engine holds at '
+        + '<span class="mono">'+fmt(best.cost)+'</span> and leaves <span class="mono">'+fmt(budget-best.cost)
+        + '</span> unspent rather than manufacturing a reason to spend it.';
+  } else if(budget>=5500000 && usesL5){
+    msg = '<b>This is the whole argument.</b> Repairing every diagnosed cause separately (L1 + L2 + L3) '
+        + 'costs <span class="mono">'+fmt(naive)+'</span> — over this envelope. One structural move buys '
+        + 'the identical constraint state for <span class="mono">'+fmt(5500000)+'</span>, because value '
+        + 'belongs to the constraint state, not to the actions.';
+  } else if(budget>=4000000){
+    msg = '<b>The same lever, repriced by the constraint state.</b> With C1 relieved, L7 — the '
+        + '<span class="mono">'+fmt(400000)+'</span> lever that was worth ₹0 a moment ago — is now worth '
+        + '<span class="mono">'+fmt(600000)+'</span> per week. Nothing about L7 changed. The state it acts on did.';
+  } else if(budget>=400000){
+    msg = '<b>Note what is NOT chosen.</b> L7 costs only <span class="mono">'+fmt(400000)+'</span> and '
+        + 'relieves C2 — but C2 depends on C1, which is still binding, so relieving it alone is worth '
+        + 'exactly ₹0. The optimiser declines to buy it, and no rule had to be written to make that happen.';
+  } else {
+    msg = '<b>Nothing clears its own cost here.</b> Silence is a valid output. The engine reports '
+        + '"do nothing" rather than recommending the least-bad affordable action.';
+  }
+  elCallout.innerHTML = msg;
+
+  // curve marker
+  elMark.setAttribute("transform","translate("+SCALE.x(budget).toFixed(2)+",0)");
+  elDot.setAttribute("cy", SCALE.y(best.value).toFixed(2));
+
+  renderExtras(budget, best);
+}
+
+// ---------------------------------------------------------------------
+// Constraint DAG, lever ledger, heuristic comparison, grounded sentence.
+// ---------------------------------------------------------------------
+function renderExtras(budget, best){
+  var i, c;
+
+  // ---- grounded sentence: every figure below is computed, none is written ----
+  var figs = 0;
+  function g(v){ figs++; return '<span class="gn">'+v+'</span>'; }
+  var txt;
+  if(best.set.length){
+    txt = 'At '+g(fmt(budget))+' the engine commits '+g(fmt(best.cost))+' to '
+        + best.set.map(function(l){ return l.id; }).join(' + ')
+        + ', relieving '+g(best.paid.length+' of 4')+' constraints and recovering '
+        + g(fmt(best.value))+' per week — payback in '
+        + g((best.cost/best.value).toFixed(1)+' weeks')
+        + ', with '+g(fmt(budget-best.cost))+' left unspent.';
+  } else {
+    txt = 'At '+g(fmt(budget))+' no bundle clears its own cost, so the engine commits '
+        + g('₹0.0 L')+' and reports do nothing.';
+  }
+  elGrounded.innerHTML = txt;
+  elGBadge.textContent = figs + ' figures · every one computed, none written';
+
+  // ---- force-buy readout (cheap, text only, safe to run every event) ----
+  var inSet = {};
+  for(i=0;i<best.set.length;i++) inSet[best.set[i].id] = 1;
+  var fl = [];
+  for(i=0;i<LEVERS.length;i++) if(forced[LEVERS[i].id] && !inSet[LEVERS[i].id]) fl.push(LEVERS[i]);
+  if(fl.length){
+    var eff = effective(best), dV = eff.value - best.value, dC = eff.cost - best.cost;
+    elForceBar.innerHTML =
+        '<span>forced in: <b>'+fl.map(function(l){return l.id;}).join(" + ")+'</b></span>'
+      + '<span>committed '+fmt(best.cost)+' → <b>'+fmt(eff.cost)+'</b> (+'+fmt(dC)+')</span>'
+      + '<span>recovered '+fmt(best.value)+' → '+fmt(eff.value)+' per week ('
+      + (dV===0 ? '<span class="zeroDelta">+₹0.0 L</span>' : '+'+fmt(dV))+')</span>'
+      + '<button type="button" class="fbtn" data-clearforce="1">clear</button>';
+  } else {
+    elForceBar.innerHTML = '<span>forced additions: <b>none</b></span>'
+      + '<span>committed '+fmt(best.cost)+' · recovered '+fmt(best.value)+' per week</span>';
+  }
+
+  // ---- everything below only changes on a real state change ----
+  var cf = cheapestFirst(budget), df = densityFirst(budget);
+  var forcedKey = "";
+  for(i=0;i<LEVERS.length;i++) if(forced[LEVERS[i].id]) forcedKey += LEVERS[i].id;
+  var key = idsOf(best.set)+"|"+idsOf(cf.set)+"|"+idsOf(df.set)
+          + "|"+(budget>=REPAIR_COST?"1":"0")+"|"+forcedKey;
+  if(key === lastExtrasKey) return;
+  lastExtrasKey = key;
+
+  // Constraint DAG reflects the EFFECTIVE bundle, so forcing a gated lever in
+  // actually turns its node red. The optimiser never buys a gated lever, so
+  // this is the only way to see the state the model exists to prevent.
+  var dagRel = valueOf(effective(best).set).relieved;
+  for(c in CONSTRAINTS){
+    var on = !!dagRel[c], gated = false, req = CONSTRAINTS[c].requires;
+    for(i=0;i<req.length;i++) if(!dagRel[req[i]]) gated = true;
+    document.getElementById("dag"+c).setAttribute("class",
+      "nodeG" + (on && !gated ? " on" : on && gated ? " gated" : ""));
+  }
+  var c1open = !!dagRel.C1;
+  var edges = [["dagEdge2p","dagEdge2h"],["dagEdge3p","dagEdge3h"]];
+  for(i=0;i<edges.length;i++){
+    document.getElementById(edges[i][0]).setAttribute("class","edge"+(c1open?" open":""));
+    document.getElementById(edges[i][1]).setAttribute("fill", c1open ? TOK_GREEN : TOK_RULE);
+  }
+
+  // lever ledger — marginal value is computed against the bundle actually chosen
+  elLedger.innerHTML = LEVERS.map(function(l){
+    var marg;
+    if(inSet[l.id]){
+      marg = best.value - valueOf(best.set.filter(function(x){ return x.id !== l.id; })).value;
+    } else {
+      marg = valueOf(best.set.concat([l])).value - best.value;
+    }
+    var sa = STANDALONE[l.id];
+    return '<tr'+(inSet[l.id]?' class="inb"':'')+'>'
+      + '<td class="n">'+l.id+'</td>'
+      + '<td class="n">'+fmt(l.cost)+'</td>'
+      + '<td class="n'+(sa===0?' z':'')+'">'+fmt(sa)+'</td>'
+      + '<td class="n'+(marg===0?' z':' hot')+'">'+fmt(marg)+'</td>'
+      + '<td>'+(inSet[l.id]
+          ? '<span class="n">in bundle</span>'
+          : '<button type="button" class="fbtn'+(forced[l.id]?' on':'')+'" data-force="'+l.id+'">'
+            + (forced[l.id] ? '✓ forced' : '+ force buy')+'</button>')
+      + '</td></tr>';
+  }).join("");
+
+  // optimiser vs the obvious rules
+  function delta(r){
+    if(r.value < best.value) return '<td class="n lose">−'+fmt(best.value-r.value)+' per week</td>';
+    if(r.cost  > best.cost)  return '<td class="n warn">same value, '+fmt(r.cost-best.cost)+' more spent</td>';
+    return '<td class="n win">matches here</td>';
+  }
+  var repairVal = valueOf(REPAIR_ALL).value;
+  elCmpBody.innerHTML =
+      '<tr class="opt"><td>Fulcrum optimiser</td><td class="n">'+idsOf(best.set)+'</td>'
+    + '<td class="n">'+fmt(best.value)+'</td><td class="n">'+fmt(best.cost)+'</td><td class="n">—</td></tr>'
+    + '<tr><td>Cheapest first</td><td class="n">'+idsOf(cf.set)+'</td><td class="n">'+fmt(cf.value)+'</td>'
+    + '<td class="n">'+fmt(cf.cost)+'</td>'+delta(cf)+'</tr>'
+    + '<tr><td>Best value/₹ first</td><td class="n">'+idsOf(df.set)+'</td><td class="n">'+fmt(df.value)+'</td>'
+    + '<td class="n">'+fmt(df.cost)+'</td>'+delta(df)+'</tr>'
+    + '<tr><td>Repair every cause</td><td class="n">L1+L2+L3</td><td class="n">'+fmt(repairVal)+'</td>'
+    + '<td class="n">'+fmt(REPAIR_COST)+'</td>'
+    + (budget >= REPAIR_COST ? delta({value:repairVal, cost:REPAIR_COST})
+                             : '<td class="n warn">over envelope</td>')+'</tr>';
+}
+
+// ---------- persona ----------
+function setPersona(p){
+  persona = p;
+  var btns = document.querySelectorAll("[data-persona]");
+  for(var i=0;i<btns.length;i++)
+    btns[i].className = (btns[i].getAttribute("data-persona")===p) ? "active" : "";
+  elScope.textContent = p==="ops"
+    ? "row scope: North only · authority: manager"
+    : "row scope: ALL regions · authority: vp";
+  elNote.textContent = p==="ops"
+    ? "Sees 2 of 7 levers — the two inside their authority. Other regions' figures never enter the prose. The remaining five stay on screen, greyed and labelled as withheld."
+    : "Sees the full portfolio, the runner-up bundle and why it lost, budget consumption against the envelope, and the unexplained residual.";
+  elPersonaLevers.innerHTML = LEVERS.map(function(l){
+    var vis = !!AUTH[p][l.auth];
+    return '<span class="chip '+(vis?"on":"warn")+'">'+l.id+' · '+(vis?"visible":"withheld · "+l.auth)+'</span>';
+  }).join("");
+  render();
+}
+
+// ---------- wiring ----------
+elBudget.addEventListener("input", render);
+
+// force-buy controls are rebuilt on every state change, so delegate rather than rebind
+document.addEventListener("click", function(e){
+  var t = e.target;
+  if(!t || !t.getAttribute) return;
+  var id = t.getAttribute("data-force");
+  if(id){
+    if(forced[id]) delete forced[id]; else forced[id] = 1;
+    lastExtrasKey = "";
+    render();
+  } else if(t.getAttribute("data-clearforce")){
+    forced = {};
+    lastExtrasKey = "";
+    render();
+  }
+});
+Array.prototype.forEach.call(document.querySelectorAll("[data-persona]"), function(b){
+  b.addEventListener("click", function(){ setPersona(b.getAttribute("data-persona")); });
+});
+Array.prototype.forEach.call(document.querySelectorAll(".presets button"), function(b){
+  b.addEventListener("click", function(){ elBudget.value = b.getAttribute("data-b"); render(); });
+});
+setPersona("cat");
 </script>
 </body>
 </html>
