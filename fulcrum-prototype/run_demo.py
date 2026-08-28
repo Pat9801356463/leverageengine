@@ -388,11 +388,20 @@ def main() -> dict:
     # ---- deliberate validator failure -------------------------------
     bad = "Revenue fell 47.3% and cancellations hit 91.4% this week."
     chk = narrative.validate_numeric_grounding(bad, ev)
+    # `blocked` is the reader-facing name: True means the validator CORRECTLY
+    # refused the fabricated statistics. The underlying validator still returns
+    # `passed` (True = clean text), which is the right sense for real narratives;
+    # inverting it here stops the negative test reading as a failing test.
+    blocked = not chk["passed"]
     print(f"\nVALIDATOR NEGATIVE TEST - injected fabricated statistics:")
     print(f"  input : {bad}")
-    print(f"  result: {'BLOCKED' if not chk['passed'] else 'passed (BAD)'} "
+    print(f"  result: {'BLOCKED' if blocked else 'passed (BAD)'} "
           f"- ungrounded numerals {chk['ungrounded']}")
-    report["validator_negative_test"] = chk
+    report["validator_negative_test"] = {
+        "numbers_in_text": chk["numbers_in_text"],
+        "ungrounded": chk["ungrounded"],
+        "blocked": blocked,
+    }
 
     # ================================================================
     banner("SCENARIO: sparse history / newly launched product line")
