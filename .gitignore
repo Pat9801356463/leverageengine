@@ -1,0 +1,19 @@
+# Byte-compiled
+__pycache__/
+*.py[cod]
+*.egg-info/
+
+# Generated scenario data. Deterministic from datagen.SEED, and run_demo.py
+# recreates it on first run, so it is regenerated rather than committed.
+fulcrum-prototype/data/
+
+# Environments
+.venv/
+venv/
+.env
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/

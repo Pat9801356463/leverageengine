@@ -1,12 +1,12 @@
 {
-  "total_latency_ms": 38260.69,
+  "total_latency_ms": 37414.74,
   "latency_by_kind_ms": {
-    "deterministic": 603.68,
-    "statistical": 36269.79,
-    "ml": 317.66,
-    "causal": 1050.33,
-    "optimisation": 16.7,
-    "llm": 2.53
+    "deterministic": 155.61,
+    "statistical": 34105.3,
+    "ml": 2032.17,
+    "causal": 1085.77,
+    "optimisation": 32.26,
+    "llm": 3.63
   },
   "model_calls": 2,
   "tokens": {
@@ -21,48 +21,55 @@
     "llm_latency_pct": 0.01,
     "non_llm_latency_pct": 99.99,
     "llm_stage_count": 2,
-    "non_llm_stage_count": 8
+    "non_llm_stage_count": 9
   },
   "stages": [
     {
       "name": "S1 load sources",
-      "latency_ms": 227.92,
+      "latency_ms": 57.86,
       "kind": "deterministic",
       "notes": "",
       "rows_processed": 107451
     },
     {
       "name": "S2 align sources",
-      "latency_ms": 374.95,
+      "latency_ms": 96.61,
       "kind": "deterministic",
       "notes": "",
       "rows_processed": 22968
     },
     {
       "name": "S3 detect",
-      "latency_ms": 36156.88,
+      "latency_ms": 34020.51,
       "kind": "statistical",
       "notes": "",
       "rows_processed": 2016
     },
     {
       "name": "S4a attribute",
-      "latency_ms": 112.91,
+      "latency_ms": 84.79,
       "kind": "statistical",
       "notes": "",
       "rows_processed": null
     },
     {
       "name": "S4b generate hypotheses",
-      "latency_ms": 317.66,
+      "latency_ms": 2032.17,
       "kind": "ml",
       "notes": "",
       "rows_processed": null
     },
     {
       "name": "S4b prosecute",
-      "latency_ms": 1050.33,
+      "latency_ms": 1085.77,
       "kind": "causal",
+      "notes": "",
+      "rows_processed": null
+    },
+    {
+      "name": "S_FB load feedback",
+      "latency_ms": 0.33,
+      "kind": "deterministic",
       "notes": "",
       "rows_processed": null
     },
@@ -75,21 +82,21 @@
     },
     {
       "name": "S6 portfolio optimisation",
-      "latency_ms": 16.7,
+      "latency_ms": 32.26,
       "kind": "optimisation",
       "notes": "",
       "rows_processed": null
     },
     {
       "name": "S7 render [ops_manager_north]",
-      "latency_ms": 1.27,
+      "latency_ms": 2.05,
       "kind": "llm",
       "notes": "",
       "rows_processed": null
     },
     {
       "name": "S7 render [category_head_appliances]",
-      "latency_ms": 1.26,
+      "latency_ms": 1.58,
       "kind": "llm",
       "notes": "",
       "rows_processed": null
@@ -101,7 +108,7 @@
       "model": "deterministic",
       "input_tokens": 0,
       "output_tokens": 0,
-      "latency_ms": 0.225034999999707,
+      "latency_ms": 0.3681999951368198,
       "cached": false,
       "cost_usd": 0.0
     },
@@ -110,7 +117,7 @@
       "model": "deterministic",
       "input_tokens": 0,
       "output_tokens": 0,
-      "latency_ms": 0.026299000012386387,
+      "latency_ms": 0.04020000051241368,
       "cached": false,
       "cost_usd": 0.0
     }

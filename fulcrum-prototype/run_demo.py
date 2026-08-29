@@ -20,6 +20,7 @@ Run:  python run_demo.py
 from __future__ import annotations
 
 import json
+import math
 import warnings
 from pathlib import Path
 
@@ -190,6 +191,42 @@ def main() -> dict:
 
     report["hypotheses"] = causal.hypothesis_table(hyps).to_dict("records")
 
+    # Export the statistical test results that produced each verdict. Without
+    # this the effect-size interval and the placebo p-value are visible in the
+    # console but absent from every committed artefact, so nothing downstream
+    # can cite them. Keys are trimmed to what a reader actually needs.
+    def _finite(v):
+        """NaN/inf are not valid JSON; emit null instead of a bare NaN token."""
+        if isinstance(v, float) and not math.isfinite(v):
+            return None
+        return v
+
+    def _pick(d: dict, keys) -> dict:
+        return {k: _finite(d[k]) for k in keys if k in d}
+
+    def _test_summary(h) -> dict:
+        t = getattr(h, "tests", {}) or {}
+        did, pl = t.get("did") or {}, t.get("placebo_in_space") or {}
+        dr, ref = t.get("dose_response") or {}, t.get("refutations") or {}
+        out = {}
+        if did:
+            out["did"] = _pick(did, ("estimate", "std_error", "ci_low", "ci_high",
+                                     "p_value", "parallel_trends_ok", "n_obs"))
+        if pl.get("available"):
+            out["placebo_in_space"] = _pick(pl, ("permutation_p_value", "rank",
+                                                 "n_placebo", "treated_rmspe_ratio"))
+        if dr.get("applicable"):
+            out["dose_response"] = _pick(dr, ("correlation", "highest_exposure_unit",
+                                              "highest_exposure", "treated_exposure",
+                                              "inverted"))
+        if ref:
+            out["refutations"] = {k: _finite(v.get("passed")) for k, v in ref.items()
+                                  if isinstance(v, dict) and "passed" in v}
+        return out
+
+    for _rec, _h in zip(report["hypotheses"], hyps):
+        _rec["tests"] = _test_summary(_h)
+
     # ================================================================
     banner("S_FB  FEEDBACK LOOP - analyst corrections carried across runs")
     fb_log_path = OUT / "feedback_log.jsonl"
@@ -300,6 +337,7 @@ def main() -> dict:
                    "value_per_week": chosen.value_per_week,
                    "realised": sorted(chosen.realised)},
         "naive_repair_cost": naive.cost,
+        "greedy_baselines": decision.greedy_baselines(dm, budget),
         "budget_sweep": decision.budget_sweep(dm, [5e5, 1.5e6, 4.5e6, 5.6e6, 7e6, 1.0e7]),
     }
 
@@ -311,6 +349,8 @@ def main() -> dict:
         "mechanism_kpi": h.effect["mechanism_kpi"],
         "mechanism_effect_pp": h.effect["mechanism_effect_pp"],
         "revenue_impact_per_week": h.effect["revenue_impact_per_week"],
+        "revenue_impact_ci": h.effect.get("revenue_impact_ci"),
+        "impact_basis": h.effect.get("basis"),
         "tests_passed": 1 + 1 + 1 + len(h.tests.get("refutations", {})),
     } for h in accepted]
     rej_payload = [{"hid": h.hid, "label": h.label,

@@ -257,6 +257,48 @@ class DecisionModel:
         return recs
 
 
+def greedy_baselines(model: DecisionModel, budget: float | None = None) -> list[dict]:
+    """The allocation rules a competent analyst would actually reach for.
+
+    These exist to be BEATEN, but they are honest implementations, not
+    strawmen. Each ranks ACTIONS by a scalar and fills the envelope greedily -
+    which is precisely the mistake the constraint-state model avoids, because a
+    scalar per action cannot represent `requires`.
+    """
+    budget = budget if budget is not None else float(model.envelope["total_budget_inr"])
+    ids = [l for l in model.levers if l != "L0"]
+
+    def standalone(lid: str) -> float:
+        return model.value(set(model.levers[lid].relieves))
+
+    def fill(order: list[str]) -> dict:
+        chosen, cost = [], 0.0
+        for lid in order:
+            if cost + model.levers[lid].cost <= budget:
+                chosen.append(lid)
+                cost += model.levers[lid].cost
+        relieved = set().union(*[set(model.levers[l].relieves) for l in chosen]) if chosen else set()
+        return {"levers": sorted(chosen), "cost_inr": cost,
+                "value_per_week_inr": model.value(relieved)}
+
+    cheapest = fill(sorted(ids, key=lambda l: model.levers[l].cost))
+    density = fill(sorted(
+        ids,
+        key=lambda l: (standalone(l) / model.levers[l].cost) if model.levers[l].cost else 0.0,
+        reverse=True))
+
+    optimal = model.solve_milp(budget=budget)
+    rows = [
+        {"rule": "fulcrum_optimiser", "levers": sorted(optimal.levers),
+         "cost_inr": optimal.cost, "value_per_week_inr": optimal.value_per_week},
+        {"rule": "cheapest_first", **cheapest},
+        {"rule": "best_value_per_rupee", **density},
+    ]
+    for r in rows:
+        r["value_gap_vs_optimal_inr"] = r["value_per_week_inr"] - optimal.value_per_week
+    return rows
+
+
 def budget_sweep(model: DecisionModel, budgets: list[float]) -> list[dict]:
     """The demo interaction: drag the budget and watch the recommendation
     change SHAPE - patch, then structural move, then full repair."""
