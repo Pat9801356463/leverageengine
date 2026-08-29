@@ -10,12 +10,12 @@
     "segment": "Consumer"
   },
   "observed_change_pct": 0.9773414747220155,
-  "change_vs_forecast_pct": -1.7981868936425915,
-  "forecast": 636807015.4781904,
+  "change_vs_forecast_pct": -1.7981868936427388,
+  "forecast": 636807015.4781914,
   "actual": 625356035.188065,
   "interval": [
-    598329311.2973915,
-    675284719.6589893
+    598329311.2973926,
+    675284719.6589901
   ],
   "localisation": {
     "n_negative_leaves": 130,
@@ -62,7 +62,12 @@
       "start": "2026-07-27",
       "mechanism_kpi": "cancellation_rate",
       "mechanism_effect_pp": 10.07,
-      "revenue_impact_per_week": -4263043.310955357,
+      "revenue_impact_per_week": -4263043.311148004,
+      "revenue_impact_ci": [
+        -4876854.680276949,
+        -3649231.9420190584
+      ],
+      "impact_basis": "mechanism gap x baseline gross orders x baseline ASP",
       "tests_passed": 6
     }
   ],
@@ -80,9 +85,9 @@
   ],
   "confidence": {
     "mode": "confident",
-    "confidence": 0.629411901362018,
-    "explained_fraction": 0.629411901362018,
-    "unexplained_inr": 2510014.6845009252,
+    "confidence": 0.6294119013904611,
+    "explained_fraction": 0.6294119013904611,
+    "unexplained_inr": 2510014.6843082784,
     "triggers": [
       {
         "code": "UNEXPLAINED_RESIDUAL",
@@ -125,6 +130,12 @@
         "fired": false,
         "detail": "intervals calibrated on out-of-sample residuals",
         "discriminating_test": ""
+      },
+      {
+        "code": "FEEDBACK_CONFLICT",
+        "fired": true,
+        "detail": "E1 (cause_node=logistics_vendor) rejected by an analyst 1x previously",
+        "discriminating_test": "Re-read the prior rejection note for this cause_node before acting on today's finding. If the source or definition changed since the rejection, record a new 'confirmed' feedback entry to clear this flag; if not, treat today's acceptance with extra scrutiny."
       }
     ],
     "accepted_hypotheses": [
@@ -138,6 +149,12 @@
         "fired": true,
         "detail": "KPIs excluded from weekly attribution by contract: ['nps']",
         "discriminating_test": "These metrics cannot support a weekly claim at their native grain; interpolating them would present interpolation as evidence."
+      },
+      {
+        "code": "FEEDBACK_CONFLICT",
+        "fired": true,
+        "detail": "E1 (cause_node=logistics_vendor) rejected by an analyst 1x previously",
+        "discriminating_test": "Re-read the prior rejection note for this cause_node before acting on today's finding. If the source or definition changed since the rejection, record a new 'confirmed' feedback entry to clear this flag; if not, treat today's acceptance with extra scrutiny."
       }
     ]
   },
