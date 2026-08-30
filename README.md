@@ -3,6 +3,8 @@
 Accenture Innovation Challenge 2026 · Round 2 prototype
 Problem statement 3 — **BusinessIntelligence.ai**
 
+**Live demo — [Fulcrum case file](https://pat9801356463.github.io/leverageengine/dashboard.html)**  ·  one self-contained static page; renders without JavaScript.
+
 ---
 
 ## The thesis in one line
@@ -18,11 +20,14 @@ Fulcrum closes that last mile — and refuses to answer when the evidence does n
 ## Quick start
 
 ```bash
-pip install numpy pandas scipy scikit-learn statsmodels pulp pyyaml pyarrow
+cd fulcrum-prototype
+pip install -r requirements.txt
 python run_demo.py
 ```
 
-Runtime ≈ 60 s, dominated by 1,680 conformal forecasts. Artefacts land in `outputs/`.
+The engine lives in `fulcrum-prototype/`; the paths under **Layout** below are relative to it.
+
+Runtime ≈ 37 s, dominated by 2,016 conformal forecasts. Artefacts land in `outputs/`.
 
 ---
 
@@ -65,7 +70,7 @@ S9  Method registry ....... every step mapped to its technique, with justificati
 ## Results from the reference run
 
 **Detection**
-- 1,680 slice × KPI tests → 318 naively significant → 274 survive FDR → **115 material**
+- 2,016 slice × KPI tests → 338 naively significant → 272 survive FDR → **115 material**
 - Empirical coverage **0.898** against a 0.90 target, on **52,080 held-out residuals**
 
 **Causal prosecution** — 3 candidates, 1 survives, and the two decoys die by *different* mechanisms:
@@ -113,7 +118,7 @@ Seven enumerated triggers, each with a *discriminating test* naming the data tha
 Kept deliberately, because each is a trap a reviewer may probe:
 
 - **AR(1) baselines absorb sustained level shifts.** An autoregressive term learns the broken state within one step and reports no anomaly. The event window is now held out of the fit.
-- **Conformal p-values are floored at 1/(n+1).** At ~0.016 with a 60-point calibration window, *no* finding could ever clear a BH threshold across 1,680 tests — multiplicity control would be silently vacuous. The interval still carries the coverage guarantee; a peaks-over-threshold GPD tail supplies a p-value that can go small.
+- **Conformal p-values are floored at 1/(n+1).** At ~0.016 with a 60-point calibration window, *no* finding could ever clear a BH threshold across 2,016 tests — multiplicity control would be silently vacuous. The interval still carries the coverage guarantee; a peaks-over-threshold GPD tail supplies a p-value that can go small.
 - **Sparse slices produced *narrower* intervals.** Short, low-variance histories yield small residuals, so the least trustworthy slices looked the most certain. Fixed with the finite-sample conformal quantile `ceil((n+1)(1-α))/n`; where that exceeds `n`, no valid interval exists and the engine says so.
 - **Coverage measured on its own calibration set is circular.** Now a genuine holdout: quantile from the first half, coverage measured on the untouched second half.
 - **Global binary segmentation is the wrong changepoint tool** for onset detection — it returns the most *balanced* split. A shift planted at 2026-07-27 was located at 2024-09-15. Replaced with out-of-control onset detection.
@@ -129,7 +134,7 @@ Kept deliberately, because each is a trap a reviewer may probe:
 - **The renderer is templated by default.** An `LLMRenderer` sits behind the same interface and the same validator, but the demo defaults to deterministic output so runs are reproducible and free.
 - **TF-IDF + KMeans stands in for BERTopic.** Short templated ticket text separates poorly; production would use embeddings → UMAP → HDBSCAN. Disclosed in the method registry rather than hidden.
 - **No sequential/RL policy.** The MILP solves the single-period budget problem. The contextual-bandit-with-knapsacks extension is roadmap, not deliverable.
-- **Detection is ~48 s for 1,680 series.** Fine for a nightly batch; the interactive path would need caching and incremental refits.
+- **Detection is ~34 s for 2,016 series.** Fine for a nightly batch; the interactive path would need caching and incremental refits.
 
 ---
 
