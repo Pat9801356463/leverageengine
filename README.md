@@ -243,8 +243,9 @@ The statistics and the optimiser are domain-general and read their world from th
 
 | Name | Role | GitHub |
 |---|---|---|
-| _[TEAM MEMBER 1]_ | _[role]_ | [@Pat9801356463](https://github.com/Pat9801356463) |
-| _[TEAM MEMBER 2]_ | _[role]_ | [@SHIVI9917](https://github.com/SHIVI9917) |
+| Pratyush Upadhyay| _[role]_ | [@Pat9801356463](https://github.com/Pat9801356463) |
+| Shivansh Upadhyay | _[role]_ | [@SHIVI9917](https://github.com/SHIVI9917) |
+| Nishtha Garg | Co-designer: problem framing, requirements and prompt design | [@Nish0703](https://github.com/Nish0703) |
 
 Submitted to the **Accenture Innovation Challenge 2026**, problem statement **BusinessIntelligence.ai**.
 
